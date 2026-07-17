@@ -179,7 +179,10 @@ export default function App() {
               <small>A Glossity Labs local tool</small>
             </span>
           </div>
-          <button className="text-button text-button--footer" type="button" onClick={() => setFormatsOpen(true)}>Supported formats</button>
+          <div className="footer-links" aria-label="Format Forge information">
+            <button className="text-button text-button--footer" type="button" onClick={() => setFormatsOpen(true)}>Supported formats</button>
+            <a className="text-button text-button--footer" href="/THIRD_PARTY_NOTICES.md" target="_blank" rel="noreferrer">Open-source licenses</a>
+          </div>
           <p><LockKeyhole size={13} aria-hidden="true" /> Built for local, private conversion</p>
         </div>
       </footer>

@@ -36,6 +36,36 @@ const files = walk(extensionDir);
 invariant(!files.some((file) => file.endsWith('.map')), 'source maps must not ship');
 invariant(files.some((file) => file.endsWith('.png')), 'extension icons are missing');
 
+const requiredLicenseFiles = [
+  'LICENSE',
+  'NOTICE',
+  'THIRD_PARTY_NOTICES.md',
+  'licenses/fflate-MIT.txt',
+  'licenses/lucide-react-ISC-and-MIT.txt',
+  'licenses/pdf-lib-MIT.txt',
+  'licenses/pdf-lib-standard-fonts-MIT.txt',
+  'licenses/pdf-lib-upng-MIT.txt',
+  'licenses/pako-MIT-and-Zlib.txt',
+  'licenses/pako-zlib-notice.txt',
+  'licenses/tslib-0BSD.txt',
+  'licenses/tslib-copyright-notice.txt',
+  'licenses/pdfjs-dist-Apache-2.0.txt',
+  'licenses/react-MIT.txt',
+  'licenses/react-dom-MIT.txt',
+  'licenses/scheduler-MIT.txt',
+];
+for (const licenseFile of requiredLicenseFiles) {
+  invariant(existsSync(join(extensionDir, licenseFile)), `${licenseFile} is missing`);
+}
+
+const generatedJavaScript = files.filter(
+  (file) => (file.endsWith('.js') || file.endsWith('.mjs')) && !file.includes('pdf.worker.min-'),
+);
+invariant(
+  generatedJavaScript.every((file) => readFileSync(file, 'utf8').includes('THIRD_PARTY_NOTICES.md')),
+  'generated JavaScript must point to the third-party notice inventory',
+);
+
 const appHtml = readFileSync(join(extensionDir, 'app.html'), 'utf8');
 const scripts = [...appHtml.matchAll(/<script\b([^>]*)>/gi)];
 invariant(scripts.every((match) => /\bsrc=/.test(match[1])), 'inline scripts violate the extension CSP');

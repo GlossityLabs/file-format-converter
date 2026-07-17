@@ -91,6 +91,11 @@ The toolbar action opens a durable full tab because Manifest V3 service workers 
 
 See [PRIVACY.md](PRIVACY.md), [SECURITY.md](SECURITY.md), and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for more detail.
 
+## Contributing
+
+Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md)
+for the development workflow, privacy constraints, and release checks.
+
 ## Development commands
 
 ```bash
@@ -106,4 +111,7 @@ npm run package:extension   # versioned Chrome ZIP
 
 ## Licensing
 
-No project license has been selected yet. FFmpeg, LibreOffice, Poppler, codecs, and bundled JavaScript dependencies retain their own licenses. Audit the exact binaries and codec configuration before public distribution.
+Format Forge is open source under the [Apache License 2.0](LICENSE). See
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for bundled dependency
+licenses and the separate obligations that apply if you distribute FFmpeg,
+LibreOffice, Poppler, codecs, or other external conversion tools.

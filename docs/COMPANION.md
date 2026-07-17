@@ -33,6 +33,19 @@ To rotate the token, stop the companion, remove its token file as documented in 
 
 Developer builds allow Chrome extension origins and local Vite origins. Production packaging should set `FORMAT_FORGE_ALLOWED_ORIGINS` to the exact stable Chrome Web Store extension origin.
 
+## External tools and licensing
+
+The companion discovers and invokes separately installed FFmpeg, LibreOffice,
+and Poppler executables. This repository and its extension ZIP do not bundle
+or redistribute those programs. Each tool retains its own license.
+
+Before distributing a companion installer that includes any conversion tool,
+audit the exact version, binary, codecs, and build configuration. In
+particular, FFmpeg terms vary with build flags and enabled codecs, LibreOffice
+ships an extensive third-party inventory, and Poppler is GPL-family software.
+The project's JavaScript notices are documented in
+[THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).
+
 ## Troubleshooting
 
 - **Companion offline:** ensure the server is running and listening on `127.0.0.1:43123`.

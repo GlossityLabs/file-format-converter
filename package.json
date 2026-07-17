@@ -2,8 +2,17 @@
   "name": "format-forge",
   "version": "0.1.0",
   "private": true,
+  "license": "Apache-2.0",
   "type": "module",
   "description": "A privacy-first Chrome extension and local companion for converting documents, images, audio, and video.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GlossityLabs/file-format-converter.git"
+  },
+  "homepage": "https://github.com/GlossityLabs/file-format-converter#readme",
+  "bugs": {
+    "url": "https://github.com/GlossityLabs/file-format-converter/issues"
+  },
   "scripts": {
     "dev": "vite",
     "dev:companion": "tsx companion/server.ts",

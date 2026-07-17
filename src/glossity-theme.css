@@ -811,6 +811,7 @@ h3,
   color: var(--gl-mint);
   font-family: var(--gl-display);
   font-weight: 600;
+  text-decoration: none;
 }
 
 .text-button:hover {
@@ -1084,6 +1085,13 @@ h3,
 
 .footer-inner {
   min-height: 96px;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
 }
 
 .footer-brand strong {
@@ -1449,6 +1457,12 @@ h3,
 
   .queue-panel {
     border-radius: 16px;
+  }
+
+  .footer-links {
+    align-items: flex-end;
+    flex-direction: column;
+    gap: 6px;
   }
 
   .modal-backdrop {

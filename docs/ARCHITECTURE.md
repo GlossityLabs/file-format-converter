@@ -56,5 +56,5 @@ Before a Chrome Web Store/macOS release:
 - Provide a stable install/uninstall flow and exact Chrome extension-origin allowlist.
 - Perform golden-file fidelity tests with representative Office documents and fonts.
 - Fuzz or corpus-test file sniffers and conversion error handling.
-- Generate third-party notices and review the exact FFmpeg build's LGPL/GPL/codecs obligations.
+- Preserve the generated third-party notices and review the exact FFmpeg build's LGPL/GPL/codecs obligations.
 - Complete Chrome Web Store privacy disclosures and a public privacy-policy URL.
