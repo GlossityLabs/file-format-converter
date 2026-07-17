@@ -67,8 +67,10 @@ export default function App() {
           <a className="brand" href="#top" aria-label="Format Forge home">
             <img src="/icons/brand.svg" alt="" width="40" height="40" />
             <span>
-              <strong>Format Forge</strong>
-              <small>Private file converter</small>
+              <strong className="brand-wordmark">
+                <span>Format</span><span className="brand-wordmark__accent"> Forge</span><i aria-hidden="true" />
+              </strong>
+              <small>by Glossity Labs</small>
             </span>
           </a>
           <nav className="header-nav" aria-label="Primary navigation">
@@ -85,15 +87,20 @@ export default function App() {
           <div className="hero__glow hero__glow--two" aria-hidden="true" />
           <div className="hero-inner">
             <div className="hero-copy">
-              <p className="eyebrow eyebrow--light"><Sparkles size={14} aria-hidden="true" /> Private by design</p>
-              <h1 id="hero-title">Change the format.<br /><span>Keep the file.</span></h1>
-              <p className="hero-lede">Convert documents, images, audio and video right on your Mac. Your source files never leave this device.</p>
+              <p className="eyebrow eyebrow--light">Private by architecture · local-first</p>
+              <h1 id="hero-title">Convert the file.<br /><span>Keep it on your Mac.</span></h1>
+              <p className="hero-lede">Documents, images, audio and video—converted in your browser or through your private desktop engine. Nothing gets uploaded.</p>
               <a className="button button--lime hero-cta" href="#workspace">
-                Start converting
+                Open private workspace
                 <ArrowDown size={17} aria-hidden="true" />
               </a>
+              <div className="hero-chips" aria-label="Privacy highlights">
+                <span><b>0 bytes</b> to the cloud</span>
+                <span><b>Loopback</b> companion</span>
+                <span>No account. <b>Ever.</b></span>
+              </div>
             </div>
-            <div className="privacy-story" aria-label="How Format Forge protects your files">
+            <aside className="privacy-story" aria-label="How Format Forge protects your files">
               <div className="privacy-story__top">
                 <span className="privacy-lock"><LockKeyhole size={22} aria-hidden="true" /></span>
                 <div>
@@ -109,19 +116,19 @@ export default function App() {
                 <span><FileCheck2 size={19} /></span>
               </div>
               <div className="privacy-story__facts">
-                <span><ShieldCheck size={15} aria-hidden="true" /> No cloud upload</span>
-                <span><ShieldCheck size={15} aria-hidden="true" /> No account</span>
+                <span><ShieldCheck size={15} aria-hidden="true" /> 0 bytes uploaded</span>
+                <span><ShieldCheck size={15} aria-hidden="true" /> Loopback only</span>
                 <span><ShieldCheck size={15} aria-hidden="true" /> No file history</span>
               </div>
-            </div>
+            </aside>
           </div>
         </section>
 
         <div id="workspace" className="workspace" tabIndex={-1}>
           <div className="workspace-heading">
             <div>
-              <p className="eyebrow">Your private workspace</p>
-              <h2>What would you like to convert?</h2>
+              <p className="eyebrow">Converter · local workspace</p>
+              <h2>Drop it here. Choose what comes out.</h2>
             </div>
             <p>Mix file types. Set each output. Convert together.</p>
           </div>
@@ -165,7 +172,12 @@ export default function App() {
         <div className="footer-inner">
           <div className="footer-brand">
             <img src="/icons/brand.svg" alt="" width="32" height="32" />
-            <span><strong>Format Forge</strong><small>Files in. Formats out. Nothing uploaded.</small></span>
+            <span>
+              <strong className="brand-wordmark">
+                <span>Format</span><span className="brand-wordmark__accent"> Forge</span><i aria-hidden="true" />
+              </strong>
+              <small>A Glossity Labs local tool</small>
+            </span>
           </div>
           <button className="text-button text-button--footer" type="button" onClick={() => setFormatsOpen(true)}>Supported formats</button>
           <p><LockKeyhole size={13} aria-hidden="true" /> Built for local, private conversion</p>
