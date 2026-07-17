@@ -1,0 +1,11 @@
+node_modules/
+dist-extension/
+dist-companion/
+release/
+coverage/
+tmp/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example

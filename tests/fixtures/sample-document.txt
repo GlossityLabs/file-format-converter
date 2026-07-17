@@ -1,0 +1,5 @@
+Format Forge conversion check
+
+This document verifies that the local companion can convert an Office document to a valid PDF without uploading the source file.
+
+Unicode: café · Ελληνικά

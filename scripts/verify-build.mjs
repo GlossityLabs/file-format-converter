@@ -1,0 +1,48 @@
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const projectRoot = fileURLToPath(new URL('..', import.meta.url));
+const extensionDir = join(projectRoot, 'dist-extension');
+
+function invariant(condition, message) {
+  if (!condition) throw new Error(`Build verification failed: ${message}`);
+}
+
+function walk(directory, output = []) {
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) walk(path, output);
+    else output.push(path);
+  }
+  return output;
+}
+
+const manifestPath = join(extensionDir, 'manifest.json');
+invariant(existsSync(manifestPath), 'manifest.json is missing');
+const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+invariant(manifest.manifest_version === 3, 'manifest_version must be 3');
+invariant(manifest.background?.service_worker === 'background.js', 'background service worker path is incorrect');
+invariant(existsSync(join(extensionDir, 'background.js')), 'background.js is missing');
+invariant(JSON.stringify(manifest.permissions) === JSON.stringify(['storage']), 'unexpected extension permissions');
+invariant(
+  JSON.stringify(manifest.host_permissions) === JSON.stringify(['http://127.0.0.1:43123/*']),
+  'host permissions must be restricted to the fixed loopback companion',
+);
+invariant(!manifest.content_scripts, 'content scripts are not allowed in this build');
+invariant(!manifest.externally_connectable, 'externally_connectable is not allowed in this build');
+
+const files = walk(extensionDir);
+invariant(!files.some((file) => file.endsWith('.map')), 'source maps must not ship');
+invariant(files.some((file) => file.endsWith('.png')), 'extension icons are missing');
+
+const appHtml = readFileSync(join(extensionDir, 'app.html'), 'utf8');
+const scripts = [...appHtml.matchAll(/<script\b([^>]*)>/gi)];
+invariant(scripts.every((match) => /\bsrc=/.test(match[1])), 'inline scripts violate the extension CSP');
+invariant(!/<script[^>]+src=["']https?:/i.test(appHtml), 'remote scripts are not allowed');
+
+const totalBytes = files.reduce((total, file) => total + statSync(file).size, 0);
+invariant(totalBytes < 100 * 1024 * 1024, 'unpacked extension exceeds the 100 MiB review limit');
+
+console.log(`Verified ${files.length} files (${(totalBytes / 1024 / 1024).toFixed(1)} MiB) in dist-extension`);
+console.log(files.map((file) => `  ${relative(extensionDir, file)}`).join('\n'));
