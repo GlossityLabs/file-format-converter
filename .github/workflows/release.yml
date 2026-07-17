@@ -18,9 +18,9 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -60,4 +60,5 @@ jobs:
             "release/SHA256SUMS.txt" \
             --verify-tag \
             --title "Format Forge ${version}" \
+            --notes "Ready-to-load Chrome extension. Download the format-forge-${version}.zip asset (not a Source code archive), unzip it, then choose the extracted folder containing manifest.json from chrome://extensions → Load unpacked. Browser image, PDF, CSV, and JSON conversions work immediately; Office and media conversions require the optional local companion on the same computer." \
             --generate-notes
