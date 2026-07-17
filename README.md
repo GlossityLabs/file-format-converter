@@ -8,6 +8,28 @@ Common conversions run directly in the extension tab. High-fidelity Office and m
 
 > Status: developer preview. The extension and companion are functional, but the macOS companion is currently a Node application rather than a signed/notarized installer.
 
+## Install the prebuilt Chrome extension
+
+You do **not** need Node.js or a copy of the developer's computer to load the
+extension. Download the ready-to-load build from the
+[latest GitHub release](https://github.com/GlossityLabs/file-format-converter/releases/latest):
+
+1. Under **Assets**, download `format-forge-<version>.zip` — not either of the
+   automatically generated “Source code” archives.
+2. Unzip the downloaded file.
+3. Open `chrome://extensions` in Chrome and enable **Developer mode**.
+4. Choose **Load unpacked** and select the extracted folder that directly
+   contains `manifest.json`.
+
+Do not select the ZIP itself or the root of a source-code clone; neither is an
+unpacked Chrome extension. The release ZIP is the portable build intended for
+other computers.
+
+Image, PDF, CSV, and JSON conversions work immediately in Chrome. Office,
+audio, and video conversions additionally require the optional local companion
+and its dependencies on the computer performing the conversion. Files still
+remain on that computer and are not sent to Glossity Labs.
+
 ## Supported conversions
 
 | Input | Output | Runs in |
