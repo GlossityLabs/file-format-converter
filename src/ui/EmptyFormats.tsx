@@ -30,7 +30,7 @@ export function EmptyFormats({ onShowFormats }: { onShowFormats: () => void }) {
       <div className="local-proof">
         <span aria-hidden="true"><FileKey2 size={20} /></span>
         <div>
-          <strong>No upload step. No cloud history.</strong>
+          <strong>No cloud upload. No cloud history.</strong>
           <p>Conversion happens in this extension or through the companion app on your computer.</p>
         </div>
       </div>

@@ -89,7 +89,7 @@ export default function App() {
             <div className="hero-copy">
               <p className="eyebrow eyebrow--light">Private by architecture · local-first</p>
               <h1 id="hero-title">Convert the file.<br /><span>Keep it on your Mac.</span></h1>
-              <p className="hero-lede">Documents, images, audio and video—converted in your browser or through your private desktop engine. Nothing gets uploaded.</p>
+              <p className="hero-lede">Documents, images, audio and video—converted in your browser or through your private desktop engine. Nothing leaves your device.</p>
               <a className="button button--lime hero-cta" href="#workspace">
                 Open private workspace
                 <ArrowDown size={17} aria-hidden="true" />
@@ -116,7 +116,7 @@ export default function App() {
                 <span><FileCheck2 size={19} /></span>
               </div>
               <div className="privacy-story__facts">
-                <span><ShieldCheck size={15} aria-hidden="true" /> 0 bytes uploaded</span>
+                <span><ShieldCheck size={15} aria-hidden="true" /> 0 bytes to cloud</span>
                 <span><ShieldCheck size={15} aria-hidden="true" /> Loopback only</span>
                 <span><ShieldCheck size={15} aria-hidden="true" /> No file history</span>
               </div>
@@ -181,6 +181,7 @@ export default function App() {
           </div>
           <div className="footer-links" aria-label="Format Forge information">
             <button className="text-button text-button--footer" type="button" onClick={() => setFormatsOpen(true)}>Supported formats</button>
+            <a className="text-button text-button--footer" href="https://github.com/GlossityLabs/file-format-converter/blob/main/PRIVACY.md" target="_blank" rel="noreferrer">Privacy</a>
             <a className="text-button text-button--footer" href="/THIRD_PARTY_NOTICES.md" target="_blank" rel="noreferrer">Open-source licenses</a>
           </div>
           <p><LockKeyhole size={13} aria-hidden="true" /> Built for local, private conversion</p>

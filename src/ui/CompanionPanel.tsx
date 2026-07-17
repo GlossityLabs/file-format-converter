@@ -73,7 +73,7 @@ export function CompanionPanel({ companion, modalOpen, onOpenModal, onCloseModal
           </div>
           <p>
             {companion.status === 'paired'
-              ? 'Your private desktop engine handles high-fidelity documents and large media without an upload.'
+              ? 'Your private desktop engine handles high-fidelity documents and large media without sending them to the cloud.'
               : companion.status === 'unpaired'
                 ? 'Enter the pairing code shown by Format Forge Companion to unlock document, audio and video conversion.'
                 : companion.status === 'checking'
@@ -163,7 +163,7 @@ function PairingModal({ companion, open, onClose }: { companion: CompanionContro
             <span><Check size={21} aria-hidden="true" /></span>
             <div>
               <strong>Connected on this device</strong>
-              <p>Companion {companion.capabilities?.version ?? ''} is ready. Files never cross a network.</p>
+              <p>Companion {companion.capabilities?.version ?? ''} is ready. Files stay on this device.</p>
             </div>
           </div>
           <div className="tool-grid" aria-label="Available local tools">

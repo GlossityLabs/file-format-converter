@@ -3,7 +3,7 @@
   "name": "Format Forge — Local File Converter",
   "short_name": "Format Forge",
   "version": "0.1.0",
-  "description": "Convert documents, images, audio, and video locally — your files are never uploaded.",
+  "description": "Convert documents, images, audio, and video locally — your files never leave your device.",
   "action": {
     "default_title": "Open Format Forge",
     "default_icon": {
