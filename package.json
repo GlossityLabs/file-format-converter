@@ -4,7 +4,7 @@
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
-  "description": "A privacy-first Chrome extension and local companion for converting documents, images, audio, and video.",
+  "description": "A private Chrome file format converter for DOCX, PDF, images, spreadsheets, audio, video, CSV, JSON, and more.",
   "repository": {
     "type": "git",
     "url": "https://github.com/GlossityLabs/file-format-converter.git"

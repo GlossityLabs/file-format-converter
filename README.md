@@ -1,6 +1,8 @@
-# Format Forge
+# Format Forge — Private File Format Converter for Chrome
 
-Format Forge is a privacy-first Chrome extension for converting documents, images, audio, video, PDFs, and tabular data. Common conversions run in the extension tab. High-fidelity Office and media conversions use an optional companion process on the same Mac, backed by LibreOffice and FFmpeg.
+Format Forge is an open-source Chrome file format converter for documents, PDFs, images, spreadsheets, audio, video, and structured data. Convert DOCX to PDF, PNG to JPG or WebP, PDF pages to images, CSV to JSON, MP4 to MP3 or GIF, and more without uploading files to a third-party service.
+
+Common conversions run directly in the extension tab. High-fidelity Office and media conversions use an optional companion process on the same Mac, backed by LibreOffice and FFmpeg.
 
 **No cloud uploads, no analytics, no remote conversion API.**
 

@@ -26,9 +26,9 @@ export function SupportedFormatsModal({ open, onClose }: SupportedFormatsModalPr
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Supported formats" eyebrow="What you can convert" size="wide">
+    <Modal open={open} onClose={onClose} title="Supported file conversions" eyebrow="Input → output" size="wide">
       <p className="formats-intro">
-        Browser-ready formats work immediately. Office, audio and video formats use the optional local companion for dependable conversion.
+        See exactly what each file type can become. Image, PDF, CSV and JSON conversions run in Chrome; Office, audio and video use the optional local desktop helper.
       </p>
       <div className="recipe-legend" aria-label="Conversion engine legend">
         <span><i className="recipe-dot recipe-dot--browser" /> In extension</span>

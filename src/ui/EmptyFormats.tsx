@@ -8,11 +8,11 @@ export function EmptyFormats({ onShowFormats }: { onShowFormats: () => void }) {
     <section className="format-preview" aria-labelledby="format-preview-title">
       <header className="format-preview__header">
         <div>
-          <p className="eyebrow">One tidy workspace</p>
-          <h2 id="format-preview-title">Built for the files you actually use</h2>
+          <p className="eyebrow">Popular file conversions</p>
+          <h2 id="format-preview-title">Convert the file types you use every day</h2>
         </div>
         <button className="text-button" type="button" onClick={onShowFormats}>
-          See all supported formats
+          See every input → output
           <ArrowUpRight size={16} aria-hidden="true" />
         </button>
       </header>
@@ -31,7 +31,7 @@ export function EmptyFormats({ onShowFormats }: { onShowFormats: () => void }) {
         <span aria-hidden="true"><FileKey2 size={20} /></span>
         <div>
           <strong>No cloud upload. No cloud history.</strong>
-          <p>Conversion happens in this extension or through the companion app on your computer.</p>
+          <p>Convert in this extension or with the private companion on your computer.</p>
         </div>
       </div>
     </section>

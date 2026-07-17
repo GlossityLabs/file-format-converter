@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "Format Forge — Local File Converter",
+  "name": "Format Forge — File Format Converter",
   "short_name": "Format Forge",
   "version": "0.1.0",
-  "description": "Convert documents, images, audio, and video locally — your files never leave your device.",
+  "description": "Convert DOCX to PDF, PNG to JPG, MP4 to MP3, PDFs to images, and CSV to JSON. Private file conversion runs locally.",
   "action": {
-    "default_title": "Open Format Forge",
+    "default_title": "Open Format Forge File Converter",
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png"

@@ -41,7 +41,12 @@ const STATUS_COPY: Record<CompanionConnectionStatus, { label: string; detail: st
 export function CompanionStatusButton({ companion, onClick }: { companion: CompanionController; onClick: () => void }) {
   const copy = STATUS_COPY[companion.status];
   return (
-    <button className={`companion-status companion-status--${companion.status}`} type="button" onClick={onClick}>
+    <button
+      className={`companion-status companion-status--${companion.status}`}
+      type="button"
+      onClick={onClick}
+      aria-label={`${copy.label}. ${copy.detail}`}
+    >
       <span className="companion-status__signal" aria-hidden="true">
         {companion.status === 'checking' ? <LoaderCircle className="spin" size={15} /> : null}
         {companion.status === 'paired' ? <Check size={15} /> : null}

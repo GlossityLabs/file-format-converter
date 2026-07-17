@@ -108,9 +108,9 @@ export function DropZone({ onFiles, disabled = false }: DropZoneProps) {
           </span>
         </div>
         <div className="drop-copy">
-          <p className="eyebrow">Start a conversion</p>
-          <h2 id="drop-title">Drop your files here</h2>
-          <p>Mix documents, images, audio and video in the same private queue.</p>
+          <p className="eyebrow">Add files to convert</p>
+          <h2 id="drop-title">Drop documents, images, audio or video here</h2>
+          <p>Supports DOCX, PDF, PNG, JPG, CSV, MP3, MP4 and 20+ more input formats.</p>
         </div>
         <button
           className="button button--primary drop-button"
@@ -119,7 +119,7 @@ export function DropZone({ onFiles, disabled = false }: DropZoneProps) {
           disabled={disabled}
         >
           <FolderOpen size={18} aria-hidden="true" />
-          Choose files
+          Choose files to convert
         </button>
         <p className="drop-note">
           <LockKeyhole size={14} aria-hidden="true" />

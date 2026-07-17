@@ -64,13 +64,13 @@ export default function App() {
       <a className="skip-link" href="#workspace">Skip to converter</a>
       <header className="site-header">
         <div className="header-inner">
-          <a className="brand" href="#top" aria-label="Format Forge home">
+          <a className="brand" href="#top" aria-label="Format Forge file format converter home">
             <img src="/icons/brand.svg" alt="" width="40" height="40" />
             <span>
               <strong className="brand-wordmark">
                 <span>Format</span><span className="brand-wordmark__accent"> Forge</span><i aria-hidden="true" />
               </strong>
-              <small>by Glossity Labs</small>
+              <small>Local file converter</small>
             </span>
           </a>
           <nav className="header-nav" aria-label="Primary navigation">
@@ -87,25 +87,25 @@ export default function App() {
           <div className="hero__glow hero__glow--two" aria-hidden="true" />
           <div className="hero-inner">
             <div className="hero-copy">
-              <p className="eyebrow eyebrow--light">Private by architecture · local-first</p>
-              <h1 id="hero-title">Convert the file.<br /><span>Keep it on your Mac.</span></h1>
-              <p className="hero-lede">Documents, images, audio and video—converted in your browser or through your private desktop engine. Nothing leaves your device.</p>
+              <p className="eyebrow eyebrow--light">Documents · Images · Audio · Video</p>
+              <h1 id="hero-title">Convert file formats.<br /><span>Keep files on your Mac.</span></h1>
+              <p className="hero-lede">Turn DOCX into PDF, MP4 into MP3 or GIF, PNG into JPG or WebP, PDF pages into images, and CSV into JSON—without cloud uploads.</p>
               <a className="button button--lime hero-cta" href="#workspace">
-                Open private workspace
+                Choose files to convert
                 <ArrowDown size={17} aria-hidden="true" />
               </a>
-              <div className="hero-chips" aria-label="Privacy highlights">
-                <span><b>0 bytes</b> to the cloud</span>
-                <span><b>Loopback</b> companion</span>
-                <span>No account. <b>Ever.</b></span>
+              <div className="hero-chips" aria-label="Popular file conversions">
+                <span><b>DOCX</b> → PDF</span>
+                <span><b>PNG</b> → JPG</span>
+                <span><b>MP4</b> → MP3</span>
               </div>
             </div>
-            <aside className="privacy-story" aria-label="How Format Forge protects your files">
+            <aside className="privacy-story" aria-label="Format Forge file converter overview">
               <div className="privacy-story__top">
                 <span className="privacy-lock"><LockKeyhole size={22} aria-hidden="true" /></span>
                 <div>
-                  <p>Local workflow</p>
-                  <strong>Your file has no trip to make.</strong>
+                  <p>Private file format converter</p>
+                  <strong>100+ conversion paths. Zero cloud uploads.</strong>
                 </div>
               </div>
               <div className="privacy-flow" aria-hidden="true">
@@ -116,9 +116,9 @@ export default function App() {
                 <span><FileCheck2 size={19} /></span>
               </div>
               <div className="privacy-story__facts">
-                <span><ShieldCheck size={15} aria-hidden="true" /> 0 bytes to cloud</span>
-                <span><ShieldCheck size={15} aria-hidden="true" /> Loopback only</span>
-                <span><ShieldCheck size={15} aria-hidden="true" /> No file history</span>
+                <span><ShieldCheck size={15} aria-hidden="true" /> Documents &amp; PDFs</span>
+                <span><ShieldCheck size={15} aria-hidden="true" /> Images &amp; data</span>
+                <span><ShieldCheck size={15} aria-hidden="true" /> Audio &amp; video</span>
               </div>
             </aside>
           </div>
@@ -127,10 +127,10 @@ export default function App() {
         <div id="workspace" className="workspace" tabIndex={-1}>
           <div className="workspace-heading">
             <div>
-              <p className="eyebrow">Converter · local workspace</p>
-              <h2>Drop it here. Choose what comes out.</h2>
+              <p className="eyebrow">File format converter · local workspace</p>
+              <h2>Choose a file. Choose a new format.</h2>
             </div>
-            <p>Mix file types. Set each output. Convert together.</p>
+            <p>DOCX → PDF · MP4 → MP3 · PNG → JPG · and more</p>
           </div>
 
           {queueError ? (
@@ -176,7 +176,7 @@ export default function App() {
               <strong className="brand-wordmark">
                 <span>Format</span><span className="brand-wordmark__accent"> Forge</span><i aria-hidden="true" />
               </strong>
-              <small>A Glossity Labs local tool</small>
+              <small>A Glossity Labs file converter</small>
             </span>
           </div>
           <div className="footer-links" aria-label="Format Forge information">
@@ -184,7 +184,7 @@ export default function App() {
             <a className="text-button text-button--footer" href="https://github.com/GlossityLabs/file-format-converter/blob/main/PRIVACY.md" target="_blank" rel="noreferrer">Privacy</a>
             <a className="text-button text-button--footer" href="/THIRD_PARTY_NOTICES.md" target="_blank" rel="noreferrer">Open-source licenses</a>
           </div>
-          <p><LockKeyhole size={13} aria-hidden="true" /> Built for local, private conversion</p>
+          <p><LockKeyhole size={13} aria-hidden="true" /> Local file conversion. No cloud upload.</p>
         </div>
       </footer>
 
