@@ -2,7 +2,7 @@
 
 Format Forge is a privacy-first Chrome extension for converting documents, images, audio, video, PDFs, and tabular data. Common conversions run in the extension tab. High-fidelity Office and media conversions use an optional companion process on the same Mac, backed by LibreOffice and FFmpeg.
 
-**No uploads, no analytics, no remote conversion API.**
+**No cloud uploads, no analytics, no remote conversion API.**
 
 > Status: developer preview. The extension and companion are functional, but the macOS companion is currently a Node application rather than a signed/notarized installer.
 
@@ -87,7 +87,7 @@ Chrome action
           └─ FFmpeg: audio/video recipes
 ```
 
-The toolbar action opens a durable full tab because Manifest V3 service workers and action popups are not suitable owners for long conversions. Browser work stays in the page. Companion uploads stream directly into private per-job temporary directories and outputs expire automatically.
+The toolbar action opens a durable full tab because Manifest V3 service workers and action popups are not suitable owners for long conversions. Browser work stays in the page. Companion transfers stream over authenticated loopback into private per-job temporary directories, and outputs expire automatically.
 
 See [PRIVACY.md](PRIVACY.md), [SECURITY.md](SECURITY.md), and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for more detail.
 

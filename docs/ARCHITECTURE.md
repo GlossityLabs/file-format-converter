@@ -57,4 +57,4 @@ Before a Chrome Web Store/macOS release:
 - Perform golden-file fidelity tests with representative Office documents and fonts.
 - Fuzz or corpus-test file sniffers and conversion error handling.
 - Preserve the generated third-party notices and review the exact FFmpeg build's LGPL/GPL/codecs obligations.
-- Complete Chrome Web Store privacy disclosures and a public privacy-policy URL.
+- Complete Chrome Web Store privacy disclosures using the public [privacy policy](../PRIVACY.md).
