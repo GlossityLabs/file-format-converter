@@ -1,6 +1,6 @@
 {
   "name": "format-forge-desktop",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "author": "Glossity Labs",
   "license": "Apache-2.0",
@@ -15,7 +15,7 @@
     "start": "electron .",
     "test": "npm run build && node scripts/smoke-native-protocol.mjs",
     "smoke:packaged": "node scripts/smoke-packaged-app.mjs",
-    "package:mac": "npm run build && electron-builder --mac",
+    "package:mac": "npm run build && electron-builder --mac --publish never",
     "package:mac:dir": "npm run build && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac --universal --dir -c.mac.notarize=false -c.mac.identity=null -c.mac.hardenedRuntime=false -c.appId=com.glossitylabs.formatforge.preview -c.productName='Format Forge Preview' -c.extraMetadata.name=format-forge-preview -c.extraMetadata.formatForgeChannel=preview -c.directories.output=release-preview",
     "package:mac:qa": "npm run build && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac --universal -c.mac.notarize=false -c.mac.identity=null -c.mac.hardenedRuntime=false -c.appId=com.glossitylabs.formatforge.preview -c.productName='Format Forge Preview' -c.artifactName='format-forge-preview-mac-${version}-${arch}.${ext}' -c.extraMetadata.name=format-forge-preview -c.extraMetadata.formatForgeChannel=preview -c.dmg.title='Format Forge Preview' -c.directories.output=release-preview"
   },

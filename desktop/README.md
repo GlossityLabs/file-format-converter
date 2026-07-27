@@ -95,7 +95,7 @@ Protocol version 1:
   "baseUrl": "http://127.0.0.1:43123",
   "token": "…",
   "service": "format-forge-companion",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "apiVersion": 1
 }
 ```

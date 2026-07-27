@@ -1,7 +1,7 @@
 import type { ChildProcess } from 'node:child_process';
 
 export const SERVICE_NAME = 'format-forge-companion' as const;
-export const SERVICE_VERSION = '0.1.2';
+export const SERVICE_VERSION = '0.1.3';
 export const API_VERSION = 1;
 export const DEFAULT_HOST = '127.0.0.1';
 export const DEFAULT_PORT = 43_123;
