@@ -14,12 +14,15 @@ import {
   WifiOff,
 } from 'lucide-react';
 import { useEffect, useId, useState, type FormEvent } from 'react';
+import { version as packageVersion } from '../../package.json';
 import type { CompanionCapabilities } from '../core/types';
 import type { CompanionConnectionStatus } from '../hooks/useConversionQueue';
 import { Modal } from './Modal';
 
-export const COMPANION_DOWNLOAD_PAGE =
-  'https://github.com/GlossityLabs/file-format-converter/releases/latest';
+export const COMPANION_DOWNLOAD_FILE_NAME =
+  `format-forge-mac-${packageVersion}-universal.dmg`;
+export const COMPANION_DOWNLOAD_URL =
+  `https://github.com/GlossityLabs/file-format-converter/releases/download/v${packageVersion}/${COMPANION_DOWNLOAD_FILE_NAME}`;
 
 export interface CompanionController {
   status: CompanionConnectionStatus;
@@ -40,7 +43,7 @@ interface CompanionPanelProps {
 const STATUS_COPY: Record<Exclude<CompanionConnectionStatus, 'paired'>, { label: string; detail: string }> = {
   checking: { label: 'Checking this Mac', detail: 'Looking for the optional Local Engine…' },
   unpaired: { label: 'Local Engine found', detail: 'Finish setup to connect it securely' },
-  unavailable: { label: 'Browser-only mode', detail: 'Get the Mac app for Office, audio and video' },
+  unavailable: { label: 'Mac Local Engine', detail: 'Download for Office, audio and video conversion' },
 };
 
 function pairedReadiness(capabilities: CompanionCapabilities | null) {
@@ -134,13 +137,25 @@ export function CompanionPanel({ companion, modalOpen, onOpenModal, onCloseModal
                 ? 'The helper is running but automatic connection is not ready. Try connecting again, or use the developer option.'
                 : companion.status === 'checking'
                   ? 'Looking for the optional helper program on this Mac. Images, PDFs, CSV and JSON work without it.'
-                  : 'Install the Format Forge app once to add Office, audio and video conversion. No Terminal or account is required.'}
+                  : 'The Format Forge Mac app is the Local Engine for Office, audio and video conversion. Install and open it once; files stay on this Mac.'}
           </p>
         </div>
-        <button className="button button--secondary engine-card__button" type="button" onClick={onOpenModal}>
-          {companion.status === 'paired' ? 'Manage connection' : companion.status === 'unpaired' ? 'Finish setup' : 'Get the Mac app'}
-          <ChevronRight size={16} aria-hidden="true" />
-        </button>
+        {companion.status === 'unavailable' ? (
+          <a
+            className="button button--secondary engine-card__button"
+            href={COMPANION_DOWNLOAD_URL}
+            download={COMPANION_DOWNLOAD_FILE_NAME}
+            rel="noopener noreferrer"
+          >
+            <Download size={16} aria-hidden="true" />
+            Download Mac Local Engine
+          </a>
+        ) : (
+          <button className="button button--secondary engine-card__button" type="button" onClick={onOpenModal}>
+            {companion.status === 'paired' ? 'Manage connection' : companion.status === 'unpaired' ? 'Finish setup' : 'Learn about the Local Engine'}
+            <ChevronRight size={16} aria-hidden="true" />
+          </button>
+        )}
       </aside>
 
       <PairingModal companion={companion} open={modalOpen} onClose={onCloseModal} />
@@ -325,9 +340,14 @@ function PairingModal({ companion, open, onClose }: { companion: CompanionContro
           ) : null}
           <p className="modal-note"><LockKeyhole size={15} aria-hidden="true" /> 127.0.0.1 means “this computer.” Files sent to the Local Engine stay on this Mac instead of going to a cloud conversion service.</p>
           <div className="modal-actions modal-actions--split">
-            <a className="button button--secondary" href={COMPANION_DOWNLOAD_PAGE} target="_blank" rel="noopener noreferrer">
+            <a
+              className="button button--secondary"
+              href={COMPANION_DOWNLOAD_URL}
+              download={COMPANION_DOWNLOAD_FILE_NAME}
+              rel="noopener noreferrer"
+            >
               <Download size={16} aria-hidden="true" />
-              Get the Mac app
+              Download Mac Local Engine
             </a>
             <button className="button button--primary" type="button" onClick={() => void handleRefresh()} disabled={isSubmitting || companion.status === 'checking'}>
               {isSubmitting ? <LoaderCircle className="spin" size={16} aria-hidden="true" /> : <RefreshCw size={16} aria-hidden="true" />}
