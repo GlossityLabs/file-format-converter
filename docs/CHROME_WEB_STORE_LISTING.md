@@ -1,5 +1,9 @@
 # Chrome Web Store listing copy
 
+Build the upload with `npm run package:extension`. The generated release ZIP
+omits the development-only manifest `key` because Chrome Web Store assigns the
+production extension ID when a new item is created.
+
 ## Name
 
 Format Forge — File Format Converter

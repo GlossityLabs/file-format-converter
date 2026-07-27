@@ -207,9 +207,11 @@ async function startEngineNow(): Promise<EngineSnapshot> {
   updateSnapshot({ state: 'starting', error: undefined });
 
   try {
-    const extensionId = await bundledExtensionId();
-    if (extensionId) {
-      process.env.FORMAT_FORGE_ALLOWED_ORIGINS = `chrome-extension://${extensionId}`;
+    const extensionIds = await bundledExtensionIds();
+    if (extensionIds.length > 0) {
+      process.env.FORMAT_FORGE_ALLOWED_ORIGINS = extensionIds
+        .map((extensionId) => `chrome-extension://${extensionId}`)
+        .join(',');
     } else if (app.isPackaged) {
       throw new Error('This app build is missing its trusted Chrome extension ID.');
     }
@@ -378,9 +380,16 @@ function installApplicationMenu(): void {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
-async function bundledExtensionId(): Promise<string | undefined> {
-  const environmentId = process.env.FORMAT_FORGE_EXTENSION_ID?.trim();
-  if (environmentId && isValidExtensionId(environmentId)) return environmentId;
+async function bundledExtensionIds(): Promise<string[]> {
+  const environmentIds = (
+    process.env.FORMAT_FORGE_EXTENSION_IDS
+    ?? process.env.FORMAT_FORGE_EXTENSION_ID
+    ?? ''
+  )
+    .split(',')
+    .map((extensionId) => extensionId.trim())
+    .filter(isValidExtensionId);
+  if (environmentIds.length > 0) return [...new Set(environmentIds)];
 
   const path = app.isPackaged
     ? join(process.resourcesPath, 'extension-id.txt')
@@ -390,9 +399,9 @@ async function bundledExtensionId(): Promise<string | undefined> {
       .split(/\r?\n/)
       .map((line) => line.trim())
       .filter((line) => line.length > 0 && !line.startsWith('#'));
-    return lines.find(isValidExtensionId);
+    return [...new Set(lines.filter(isValidExtensionId))];
   } catch {
-    return undefined;
+    return [];
   }
 }
 
@@ -475,12 +484,14 @@ async function registerBrowserConnection(requestedId?: string): Promise<unknown>
   if (!isInstalledInApplications()) {
     throw new Error('Move Format Forge to Applications, then open it again before connecting Chrome.');
   }
-  const extensionId = requestedId?.trim() || (await bundledExtensionId());
-  if (!extensionId) {
+  const extensionIds = requestedId?.trim()
+    ? [requestedId.trim()]
+    : await bundledExtensionIds();
+  if (extensionIds.length === 0) {
     throw new Error('This build does not contain a Chrome extension ID. Add the release extension ID first.');
   }
   try {
-    const registration = await registerNativeHost(nativeHostExecutablePath(), extensionId);
+    const registration = await registerNativeHost(nativeHostExecutablePath(), extensionIds);
     nativeRegistrationError = undefined;
     return registration;
   } catch (error) {
@@ -597,9 +608,9 @@ async function startDesktopApplication(): Promise<void> {
   installApplicationMenu();
   installIpcHandlers();
 
-  const configuredId = await bundledExtensionId();
-  if (app.isPackaged && configuredId && isInstalledInApplications()) {
-    await registerBrowserConnection(configuredId).catch((error) => {
+  const configuredIds = await bundledExtensionIds();
+  if (app.isPackaged && configuredIds.length > 0 && isInstalledInApplications()) {
+    await registerBrowserConnection().catch((error) => {
       console.error(nativeRegistrationError ?? friendlyRegistrationError(error));
     });
   }

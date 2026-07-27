@@ -22,7 +22,11 @@ import {
 
 const desktopDirectory = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const repositoryDirectory = resolve(desktopDirectory, '..');
-const extensionId = (await readFile(join(desktopDirectory, 'assets', 'extension-id.txt'), 'utf8')).trim();
+const extensionIds = (await readFile(join(desktopDirectory, 'assets', 'extension-id.txt'), 'utf8'))
+  .split(/\r?\n/)
+  .map((line) => line.trim())
+  .filter((line) => line.length > 0 && !line.startsWith('#'));
+const storeExtensionId = 'hepepnceipleliodfnmfkmbcmfkbmpan';
 
 const request = { type: 'bootstrap', protocolVersion: 1 };
 const frame = encodeNativeMessage(request);
@@ -43,10 +47,13 @@ assert.doesNotMatch(
   'native-host wrapper must not hard-code the production executable name',
 );
 
-const manifest = createNativeHostManifest(wrapperPath, extensionId);
+const manifest = createNativeHostManifest(wrapperPath, extensionIds);
 assert.equal(manifest.name, NATIVE_HOST_NAME);
 assert.equal(manifest.path, wrapperPath);
-assert.deepEqual(manifest.allowed_origins, [`chrome-extension://${extensionId}/`]);
+assert.deepEqual(
+  manifest.allowed_origins,
+  extensionIds.map((extensionId) => `chrome-extension://${extensionId}/`),
+);
 assert.equal(
   isInstalledApplicationExecutable('/Applications/Format Forge.app/Contents/MacOS/Format Forge', '/Users/test'),
   true,
@@ -76,10 +83,11 @@ assert.equal(isNewerRelease('not-a-version', '0.1.9'), false);
 const temporaryDirectory = await mkdtemp(join(tmpdir(), 'format-forge-native-host-'));
 try {
   const manifestPath = join(temporaryDirectory, 'host.json');
-  const registered = await registerNativeHost(wrapperPath, extensionId, manifestPath);
+  const registered = await registerNativeHost(wrapperPath, extensionIds, manifestPath);
   assert.equal(registered.registered, true);
   assert.equal(registered.executableMatches, true);
-  assert.equal(registered.extensionId, extensionId);
+  assert.equal(registered.extensionId, extensionIds[0]);
+  assert.deepEqual(registered.extensionIds, extensionIds);
   assert.deepEqual(await readNativeHostRegistration(wrapperPath, manifestPath), registered);
 } finally {
   await rm(temporaryDirectory, { recursive: true, force: true });
@@ -99,7 +107,14 @@ const hexadecimalId = createHash('sha256').update(publicKeyDer).digest('hex').sl
 const calculatedId = [...hexadecimalId]
   .map((character) => String.fromCharCode('a'.charCodeAt(0) + Number.parseInt(character, 16)))
   .join('');
-assert.equal(calculatedId, extensionId, 'desktop extension ID must match the manifest public key');
+assert.ok(
+  extensionIds.includes(calculatedId),
+  'desktop extension IDs must include the unpacked ID derived from the manifest public key',
+);
+assert.ok(
+  extensionIds.includes(storeExtensionId),
+  'desktop extension IDs must include the Chrome Web Store production ID',
+);
 
 const rootPackage = JSON.parse(await readFile(join(repositoryDirectory, 'package.json'), 'utf8'));
 const desktopPackage = JSON.parse(await readFile(join(desktopDirectory, 'package.json'), 'utf8'));

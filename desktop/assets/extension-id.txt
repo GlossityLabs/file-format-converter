@@ -1,1 +1,5 @@
+# Chrome Web Store production extension
+hepepnceipleliodfnmfkmbcmfkbmpan
+
+# Stable unpacked-development extension
 komlcmkjcjckgidiijebphbfhhkajjmg

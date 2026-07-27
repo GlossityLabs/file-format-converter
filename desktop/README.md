@@ -78,9 +78,20 @@ manifest atomically on every stable launch, so moving or replacing the app
 repairs the absolute path automatically. Registration failures remain visible
 in the app instead of being silently discarded.
 
-The direct-distribution extension ID is stored in `assets/extension-id.txt`. It is derived from the public `key` in `public/manifest.json`; the smoke test verifies they match. Chrome native-host manifests require an exact extension origin and do not allow wildcards. A future Chrome Web Store release must update the public key/ID and `extension-id.txt` together.
+The trusted Chrome extension IDs are stored in `assets/extension-id.txt`. The
+file includes both the production Chrome Web Store ID and the stable unpacked
+development ID derived from the public `key` in `public/manifest.json`. The
+smoke test verifies both entries. Chrome native-host manifests require exact
+extension origins and do not allow wildcards. The Chrome Web Store package
+omits the development-only `key` because the store assigns the production ID.
 
-The desktop app also sets `FORMAT_FORGE_ALLOWED_ORIGINS` to that exact origin before starting the companion. When Chrome starts the dedicated native host, the validated source origin is forwarded to the engine-only app process. Permissive origins remain available only for explicit development runs outside the packaged app.
+The desktop app registers every bundled ID and also sets
+`FORMAT_FORGE_ALLOWED_ORIGINS` to those exact origins before starting the
+companion. This keeps the signed Store extension working while preserving the
+unpacked development build used for local QA. When Chrome starts the dedicated
+native host, the validated source origin is forwarded to the engine-only app
+process. Permissive origins remain available only for explicit development runs
+outside the packaged app.
 
 Protocol version 1:
 
@@ -95,7 +106,7 @@ Protocol version 1:
   "baseUrl": "http://127.0.0.1:43123",
   "token": "…",
   "service": "format-forge-companion",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "apiVersion": 1
 }
 ```

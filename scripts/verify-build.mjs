@@ -59,13 +59,20 @@ const extensionId = createHash('sha256')
   .digest('hex')
   .slice(0, 32)
   .replace(/[0-9a-f]/g, (digit) => String.fromCharCode(97 + Number.parseInt(digit, 16)));
-const nativeHostExtensionId = readFileSync(
+const nativeHostExtensionIds = readFileSync(
   join(projectRoot, 'desktop', 'assets', 'extension-id.txt'),
   'utf8',
-).trim();
+)
+  .split(/\r?\n/)
+  .map((line) => line.trim())
+  .filter((line) => line.length > 0 && !line.startsWith('#'));
 invariant(
-  extensionId === nativeHostExtensionId,
-  'manifest public key and native-host allowed extension ID do not match',
+  nativeHostExtensionIds.includes(extensionId),
+  'native-host allowed IDs must include the unpacked ID derived from the manifest public key',
+);
+invariant(
+  nativeHostExtensionIds.includes('hepepnceipleliodfnmfkmbcmfkbmpan'),
+  'native-host allowed IDs must include the Chrome Web Store production ID',
 );
 invariant(manifest.background?.service_worker === 'background.js', 'background service worker path is incorrect');
 invariant(existsSync(join(extensionDir, 'background.js')), 'background.js is missing');

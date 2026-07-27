@@ -10,13 +10,14 @@ export interface NativeHostManifest {
   description: string;
   path: string;
   type: 'stdio';
-  allowed_origins: [string];
+  allowed_origins: string[];
 }
 
 export interface NativeHostRegistration {
   registered: boolean;
   manifestPath: string;
   extensionId?: string;
+  extensionIds?: string[];
   executableMatches: boolean;
   canRegister?: boolean;
   reason?: string;
@@ -52,10 +53,16 @@ export function isInstalledApplicationExecutable(
 
 export function createNativeHostManifest(
   executablePath: string,
-  extensionId: string,
+  extensionIds: string | readonly string[],
 ): NativeHostManifest {
-  const normalizedId = extensionId.trim();
-  if (!isValidExtensionId(normalizedId)) {
+  const normalizedIds = [
+    ...new Set(
+      (typeof extensionIds === 'string' ? [extensionIds] : extensionIds)
+        .map((extensionId) => extensionId.trim())
+        .filter(Boolean),
+    ),
+  ];
+  if (normalizedIds.length === 0 || normalizedIds.some((extensionId) => !isValidExtensionId(extensionId))) {
     throw new Error('Chrome extension IDs contain exactly 32 letters from a through p.');
   }
   if (!executablePath.startsWith('/')) {
@@ -66,7 +73,7 @@ export function createNativeHostManifest(
     description: 'Starts the private Format Forge conversion engine for Chrome.',
     path: executablePath,
     type: 'stdio',
-    allowed_origins: [`chrome-extension://${normalizedId}/`],
+    allowed_origins: normalizedIds.map((extensionId) => `chrome-extension://${extensionId}/`),
   };
 }
 
@@ -76,17 +83,22 @@ export async function readNativeHostRegistration(
 ): Promise<NativeHostRegistration> {
   try {
     const manifest = JSON.parse(await readFile(manifestPath, 'utf8')) as Partial<NativeHostManifest>;
-    const origin = manifest.allowed_origins?.[0];
-    const match = /^chrome-extension:\/\/([a-p]{32})\/$/.exec(origin ?? '');
+    const origins = Array.isArray(manifest.allowed_origins) ? manifest.allowed_origins : [];
+    const extensionIds = origins.flatMap((origin) => {
+      const match = /^chrome-extension:\/\/([a-p]{32})\/$/.exec(origin);
+      return match ? [match[1]] : [];
+    });
     const valid =
       manifest.name === NATIVE_HOST_NAME &&
       manifest.type === 'stdio' &&
       typeof manifest.path === 'string' &&
-      Boolean(match);
+      extensionIds.length > 0 &&
+      extensionIds.length === origins.length;
     return {
       registered: valid,
       manifestPath,
-      extensionId: match?.[1],
+      extensionId: extensionIds[0],
+      extensionIds,
       executableMatches: manifest.path === executablePath,
       reason: valid
         ? manifest.path === executablePath
@@ -109,10 +121,10 @@ export async function readNativeHostRegistration(
 
 export async function registerNativeHost(
   executablePath: string,
-  extensionId: string,
+  extensionIds: string | readonly string[],
   manifestPath = nativeHostManifestPath(),
 ): Promise<NativeHostRegistration> {
-  const manifest = createNativeHostManifest(executablePath, extensionId);
+  const manifest = createNativeHostManifest(executablePath, extensionIds);
   await mkdir(dirname(manifestPath), { recursive: true, mode: 0o700 });
   const temporaryPath = `${manifestPath}.${process.pid}.tmp`;
   await writeFile(temporaryPath, `${JSON.stringify(manifest, null, 2)}\n`, {
