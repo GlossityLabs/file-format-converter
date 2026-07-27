@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4Vjji1Pmoj3qTxuDUwzEUlvmlr3yOQOYuqT8UbuJQkP2RsgyHjYM5w8BwLpQKSYhHSY2+/B+H3HU+TSw2kYMjBqCzglPJjkI8X5YA5++6ytFFELwPx1mAjWffzV9e+3C7Rc+m3R6s14TIWGWVmhpeuuei4pNrlk/5I/eK7mg4jD4CvClTpPjLpYtWdxkzO6lvf3cIWzUdG5bYQC3R852+SiMrVxow/Qn2NdrU7HFDtx+mippV1dVJUV30mnk2+99QsQF+ggfDyw5rCzqVt8KuunWw0lMECRj9TXUknGYg3jqFwEaBY+k/6EyXQmx9kZcOI0E9dQG0vt4q0oiez2ZpwIDAQAB",
   "name": "Format Forge — File Format Converter",
   "short_name": "Format Forge",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Convert DOCX to PDF, PNG to JPG, MP4 to MP3, PDFs to images, and CSV to JSON. Private file conversion runs locally.",
   "action": {
     "default_title": "Open Format Forge File Converter",
@@ -21,7 +22,7 @@
     "48": "icons/icon-48.png",
     "128": "icons/icon-128.png"
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "nativeMessaging"],
   "host_permissions": ["http://127.0.0.1:43123/*"],
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; worker-src 'self'; connect-src 'self' http://127.0.0.1:43123"

@@ -86,6 +86,7 @@ export interface ToolCapability {
 export interface CompanionCapabilities {
   service: 'format-forge-companion';
   version: string;
+  apiVersion?: number;
   paired: boolean;
   tools: {
     ffmpeg: ToolCapability;

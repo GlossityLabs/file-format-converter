@@ -2,11 +2,11 @@
 
 Format Forge is an open-source Chrome file format converter for documents, PDFs, images, spreadsheets, audio, video, and structured data. Convert DOCX to PDF, PNG to JPG or WebP, PDF pages to images, CSV to JSON, MP4 to MP3 or GIF, and more without uploading files to a third-party service.
 
-Common conversions run directly in the extension tab. High-fidelity Office and media conversions use an optional companion process on the same Mac, backed by LibreOffice and FFmpeg.
+Common conversions run directly in the extension tab. High-fidelity Office and media conversions use the optional Format Forge Mac app, backed by LibreOffice and FFmpeg on the same computer.
 
 **No cloud uploads, no analytics, no remote conversion API.**
 
-> Status: developer preview. The extension and companion are functional, but the macOS companion is currently a Node application rather than a signed/notarized installer.
+> Status: developer preview. The extension, automatic Chrome connection, and macOS desktop package are functional. A public Mac release must still be built with Glossity Labs' Apple signing and notarization credentials, and this MVP detects separately installed LibreOffice and FFmpeg rather than bundling them.
 
 ## Install the prebuilt Chrome extension
 
@@ -25,10 +25,17 @@ Do not select the ZIP itself or the root of a source-code clone; neither is an
 unpacked Chrome extension. The release ZIP is the portable build intended for
 other computers.
 
-Image, PDF, CSV, and JSON conversions work immediately in Chrome. Office,
-audio, and video conversions additionally require the optional local companion
-and its dependencies on the computer performing the conversion. Files still
-remain on that computer and are not sent to Glossity Labs.
+Image, PDF, CSV, and JSON conversions work immediately in Chrome. For Office,
+audio, and video conversions on macOS, also download the universal
+`format-forge-mac-<version>-universal.dmg` release asset, move Format Forge to
+Applications, and open it once. Chrome then starts and pairs with the app
+automatically—no Terminal command or copied code is required. The current MVP
+detects LibreOffice and FFmpeg installed on that Mac; the app shows clearly when
+either converter is missing. Files remain on the computer and are not sent to
+Glossity Labs. Signed production builds check for Mac app updates automatically;
+after a download, choose **Restart and install** in the app. The Chrome extension
+and Mac app may update in either order when their Local Engine API remains
+compatible.
 
 ## Supported conversions
 
@@ -45,7 +52,7 @@ remain on that computer and are not sent to Glossity Labs.
 | MP3, WAV, FLAC, M4A, AAC, OGG, Opus | Common audio formats | Local companion + FFmpeg |
 | MP4, MOV, MKV, WebM, AVI, M4V | MP4, WebM, MOV, MKV, GIF, MP3, WAV | Local companion + FFmpeg |
 
-Format Forge intentionally does not claim reliable PDF-to-Word, raster-to-vector, DRM removal, macro preservation, or password-protected document conversion. Office fidelity depends on installed fonts and LibreOffice's compatibility with the source document.
+Format Forge intentionally does not claim reliable PDF-to-Word, raster-to-vector, DRM removal, macro preservation, or password-protected document conversion. LibreOffice can open PDFs in its drawing editor but does not provide a trustworthy PDF-to-DOCX export path. That recipe will remain unavailable until a dedicated, licensed converter passes fidelity tests. Office fidelity depends on installed fonts and LibreOffice's compatibility with the source document.
 
 ## Run locally
 
@@ -86,6 +93,19 @@ npm run companion:token
 
 Open **Local engine** in the extension, paste the token once, and connect. Do not share or commit it.
 
+Those commands are a source-development fallback. To develop or package the normal Mac app instead:
+
+```bash
+npm ci --prefix desktop
+npm run verify:desktop
+npm run dev:desktop
+npm run package:desktop
+```
+
+The desktop package starts the companion itself, registers the exact Chrome
+Native Messaging host, and keeps file transfer on authenticated loopback HTTP.
+See [desktop/README.md](desktop/README.md) for its packaging and release details.
+
 For extension UI development:
 
 ```bash
@@ -99,6 +119,8 @@ The Vite page can exercise browser recipes. Chrome APIs and the packaged CSP mus
 - `dist-extension/` — unpacked Manifest V3 extension
 - `dist-companion/` — compiled companion server
 - `release/format-forge-<version>.zip` — Chrome upload artifact after `npm run package:extension`
+- `desktop/release/format-forge-mac-<version>-universal.dmg` — signed/notarized Mac installer produced by the release workflow
+- `desktop/release/format-forge-mac-<version>-universal.zip` and `latest-mac.yml` — signed automatic-update payload and metadata
 
 ## Architecture
 
@@ -106,9 +128,10 @@ The Vite page can exercise browser recipes. Chrome APIs and the packaged CSP mus
 Chrome action
   └─ full extension tab
       ├─ browser engine: image, PDF, CSV/JSON
-      └─ authenticated 127.0.0.1 companion
-          ├─ LibreOffice: document/spreadsheet/presentation recipes
-          └─ FFmpeg: audio/video recipes
+      └─ Native Messaging bootstrap: launch + authorize only
+          └─ authenticated 127.0.0.1 desktop engine
+              ├─ LibreOffice: document/spreadsheet/presentation recipes
+              └─ FFmpeg: audio/video recipes
 ```
 
 The toolbar action opens a durable full tab because Manifest V3 service workers and action popups are not suitable owners for long conversions. Browser work stays in the page. Companion transfers stream over authenticated loopback into private per-job temporary directories, and outputs expire automatically.
@@ -131,6 +154,8 @@ npm run typecheck           # browser + companion TypeScript
 npm test                    # unit tests
 npm run build               # production extension + companion
 npm run package:extension   # versioned Chrome ZIP
+npm run verify:desktop      # desktop build + native-host smoke test
+npm run package:desktop     # signed/notarized universal DMG + updater when Apple credentials are configured
 ```
 
 ## Licensing

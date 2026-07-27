@@ -1,6 +1,6 @@
 {
   "name": "format-forge",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
@@ -16,6 +16,7 @@
   "scripts": {
     "dev": "vite",
     "dev:companion": "tsx companion/server.ts",
+    "dev:desktop": "npm --prefix desktop run dev",
     "companion:token": "tsx companion/token.ts",
     "smoke:companion": "node scripts/smoke-companion.mjs",
     "build": "npm run typecheck && vite build && npm run build:companion && npm run verify:build",
@@ -25,7 +26,9 @@
     "test:watch": "vitest",
     "verify:build": "node scripts/verify-build.mjs",
     "verify": "npm run test && npm run build",
-    "package:extension": "npm run build && node scripts/package-extension.mjs"
+    "verify:desktop": "npm --prefix desktop test",
+    "package:extension": "npm run build && node scripts/package-extension.mjs",
+    "package:desktop": "npm --prefix desktop run package:mac"
   },
   "dependencies": {
     "fflate": "^0.8.2",

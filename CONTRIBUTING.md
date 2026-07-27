@@ -11,6 +11,12 @@ code, or file-upload services.
 3. Make the change with tests and documentation where applicable.
 4. Run `npm run verify` before opening a pull request.
 
+Desktop changes also require `npm ci --prefix desktop` and
+`npm run verify:desktop`. Use `npm --prefix desktop run package:mac:dir` for an
+unsigned local universal-app smoke test; never publish that artifact. Tagged
+releases require the Apple signing/notarization secrets documented in
+`desktop/README.md`.
+
 Never commit converted user files, pairing tokens, GitHub credentials, `.env`
 files, or generated build directories. New bundled dependencies must have a
 compatible open-source license and be added to the production artifact's

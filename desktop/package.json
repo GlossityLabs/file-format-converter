@@ -1,0 +1,117 @@
+{
+  "name": "format-forge-desktop",
+  "version": "0.1.2",
+  "private": true,
+  "author": "Glossity Labs",
+  "license": "Apache-2.0",
+  "repository": "https://github.com/GlossityLabs/file-format-converter",
+  "description": "Format Forge local conversion engine for macOS",
+  "type": "module",
+  "main": "dist/main.js",
+  "scripts": {
+    "build:companion": "npm --prefix .. run build:companion",
+    "build": "npm run build:companion && tsc -p tsconfig.json",
+    "dev": "npm run build && electron .",
+    "start": "electron .",
+    "test": "npm run build && node scripts/smoke-native-protocol.mjs",
+    "smoke:packaged": "node scripts/smoke-packaged-app.mjs",
+    "package:mac": "npm run build && electron-builder --mac",
+    "package:mac:dir": "npm run build && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac --universal --dir -c.mac.notarize=false -c.mac.identity=null -c.mac.hardenedRuntime=false -c.appId=com.glossitylabs.formatforge.preview -c.productName='Format Forge Preview' -c.extraMetadata.name=format-forge-preview -c.extraMetadata.formatForgeChannel=preview -c.directories.output=release-preview",
+    "package:mac:qa": "npm run build && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac --universal -c.mac.notarize=false -c.mac.identity=null -c.mac.hardenedRuntime=false -c.appId=com.glossitylabs.formatforge.preview -c.productName='Format Forge Preview' -c.artifactName='format-forge-preview-mac-${version}-${arch}.${ext}' -c.extraMetadata.name=format-forge-preview -c.extraMetadata.formatForgeChannel=preview -c.dmg.title='Format Forge Preview' -c.directories.output=release-preview"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "electron": "^37.2.6",
+    "electron-builder": "^26.0.12",
+    "typescript": "^5.7.2"
+  },
+  "build": {
+    "appId": "com.glossitylabs.formatforge",
+    "productName": "Format Forge",
+    "artifactName": "format-forge-mac-${version}-${arch}.${ext}",
+    "extraMetadata": {
+      "formatForgeChannel": "stable"
+    },
+    "asar": true,
+    "files": [
+      "dist/**/*",
+      "renderer/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../dist-companion",
+        "to": "companion",
+        "filter": [
+          "**/*.js"
+        ]
+      },
+      {
+        "from": "assets/extension-id.txt",
+        "to": "extension-id.txt"
+      },
+      {
+        "from": "assets/format-forge-native-host",
+        "to": "native-host/format-forge-native-host"
+      },
+      {
+        "from": "dist/native-host.mjs",
+        "to": "native-host/native-host.mjs"
+      },
+      {
+        "from": "../LICENSE",
+        "to": "legal/FORMAT-FORGE-LICENSE.txt"
+      },
+      {
+        "from": "../NOTICE",
+        "to": "legal/FORMAT-FORGE-NOTICE.txt"
+      },
+      {
+        "from": "../THIRD_PARTY_NOTICES.md",
+        "to": "legal/THIRD_PARTY_NOTICES.md"
+      },
+      {
+        "from": "node_modules/electron/LICENSE",
+        "to": "legal/ELECTRON-LICENSE.txt"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.utilities",
+      "icon": "assets/icon.png",
+      "hardenedRuntime": true,
+      "notarize": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.inherit.plist",
+      "gatekeeperAssess": false,
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        }
+      ]
+    },
+    "dmg": {
+      "title": "Format Forge"
+    },
+    "directories": {
+      "output": "release"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "GlossityLabs",
+      "repo": "file-format-converter",
+      "releaseType": "release"
+    }
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9"
+  }
+}

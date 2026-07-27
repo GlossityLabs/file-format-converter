@@ -11,7 +11,8 @@ import {
   TriangleAlert,
   X,
 } from 'lucide-react';
-import type { ConversionJob, FormatId, QualityPreset } from '../core/types';
+import { findRecipe, isRecipeAvailable, recipeUnavailableReason } from '../core/recipes';
+import type { CompanionCapabilities, ConversionJob, FormatId, QualityPreset } from '../core/types';
 import { FormatIcon } from './FormatIcon';
 import {
   FORMAT_LABELS,
@@ -23,6 +24,7 @@ import {
 
 interface JobCardProps {
   job: ConversionJob;
+  capabilities: CompanionCapabilities | null;
   onUpdateOutput: (id: string, format: FormatId) => void;
   onUpdatePreset: (id: string, preset: QualityPreset) => void;
   onStart: (id: string) => void;
@@ -36,6 +38,7 @@ const ACTIVE_STATUSES = new Set<ConversionJob['status']>(['uploading', 'converti
 
 export function JobCard({
   job,
+  capabilities,
   onUpdateOutput,
   onUpdatePreset,
   onStart,
@@ -47,6 +50,11 @@ export function JobCard({
   const isActive = ACTIVE_STATUSES.has(job.status);
   const canConfigure = job.status === 'ready' || job.status === 'failed' || job.status === 'canceled';
   const outputOptions = getOutputFormats(job.inputFormat, job.outputFormat);
+  const selectedRecipe = findRecipe(job.inputFormat, job.outputFormat);
+  const selectedRecipeAvailable = Boolean(selectedRecipe && isRecipeAvailable(selectedRecipe, capabilities));
+  const availabilityMessage = selectedRecipe
+    ? recipeUnavailableReason(selectedRecipe, capabilities)
+    : 'This conversion is not supported.';
   const clampedProgress = Math.max(0, Math.min(100, Math.round(job.progress)));
   const fileMeta = `${FORMAT_LABELS[job.inputFormat]} · ${formatFileSize(job.file.size)}`;
 
@@ -83,11 +91,15 @@ export function JobCard({
               onChange={(event) => onUpdateOutput(job.id, event.target.value as FormatId)}
               aria-label={`Output format for ${job.file.name}`}
             >
-              {outputOptions.map((format) => (
-                <option key={format} value={format}>
-                  {FORMAT_LABELS[format]}
-                </option>
-              ))}
+              {outputOptions.map((format) => {
+                const optionRecipe = findRecipe(job.inputFormat, format);
+                const optionAvailable = Boolean(optionRecipe && isRecipeAvailable(optionRecipe, capabilities));
+                return (
+                  <option key={format} value={format} disabled={!optionAvailable}>
+                    {FORMAT_LABELS[format]}{optionAvailable ? '' : ' — unavailable'}
+                  </option>
+                );
+              })}
             </select>
           </label>
           <label className="select-field select-field--quality">
@@ -130,11 +142,13 @@ export function JobCard({
         </div>
       ) : null}
 
-      {job.error && job.status === 'failed' ? <p className="job-error">{job.error}</p> : null}
+      {canConfigure && !selectedRecipeAvailable ? (
+        <p className="job-error job-error--availability">{availabilityMessage}</p>
+      ) : job.error && job.status === 'failed' ? <p className="job-error">{job.error}</p> : null}
 
       <div className="job-card__actions">
         {job.status === 'ready' ? (
-          <button className="button button--small button--dark" type="button" onClick={() => onStart(job.id)}>
+          <button className="button button--small button--dark" type="button" onClick={() => onStart(job.id)} disabled={!selectedRecipeAvailable}>
             <Play size={14} fill="currentColor" aria-hidden="true" />
             Convert
           </button>
@@ -146,7 +160,7 @@ export function JobCard({
           </button>
         ) : null}
         {job.status === 'failed' || job.status === 'canceled' ? (
-          <button className="button button--small button--dark" type="button" onClick={() => onRetry(job.id)}>
+          <button className="button button--small button--dark" type="button" onClick={() => onRetry(job.id)} disabled={!selectedRecipeAvailable}>
             <RefreshCw size={14} aria-hidden="true" />
             Retry
           </button>

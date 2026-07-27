@@ -16,11 +16,24 @@ includes the corresponding license texts under `licenses/`.
 | PDF.js (`pdfjs-dist`) | 6.1.200 | Apache-2.0 | [mozilla/pdf.js](https://github.com/mozilla/pdf.js) |
 | React and React DOM | 19.2.7 | MIT | [facebook/react](https://github.com/facebook/react) |
 | Scheduler | 0.27.0 | MIT | [facebook/react](https://github.com/facebook/react) |
+| Electron (desktop app runtime) | 37.10.3 | MIT; includes Chromium and other components under their respective licenses | [electron/electron](https://github.com/electron/electron) |
+| electron-updater | 6.8.9 | MIT | [electron-userland/electron-builder](https://github.com/electron-userland/electron-builder) |
 
 The distributed extension contains transformed and minified object-form code
 from PDF.js 6.1.200. Its Apache-2.0 license is preserved in
 `licenses/pdfjs-dist-Apache-2.0.txt`, and generated JavaScript points readers
 back to this notice inventory.
+
+The macOS desktop package includes Electron's MIT license under
+`Contents/Resources/legal/ELECTRON-LICENSE.txt`. Electron embeds Chromium and
+its third-party attributions in the distributed runtime; those components
+retain their respective licenses.
+
+The desktop update client includes its permissively licensed runtime
+dependencies, including builder-util-runtime, debug, fs-extra, graceful-fs,
+jsonfile, universalify, js-yaml, argparse, lazy-val, Lodash helpers, semver,
+sax, ms, and tiny-typed-emitter. Their license files remain in their packaged
+modules and their upstream inventories are locked in `desktop/package-lock.json`.
 
 `pdfjs-dist` may install `@napi-rs/canvas` and platform packages for Node.js.
 Those packages are not bundled into Format Forge's browser extension; their

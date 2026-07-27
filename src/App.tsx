@@ -1,20 +1,32 @@
 import {
   ArrowDown,
   ArrowRight,
-  FileCheck2,
-  Files,
   LockKeyhole,
   ShieldCheck,
-  Sparkles,
   X,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import type { FormatId } from './core/types';
 import { useConversionQueue } from './hooks/useConversionQueue';
 import { CompanionPanel, CompanionStatusButton } from './ui/CompanionPanel';
 import { DropZone } from './ui/DropZone';
 import { EmptyFormats } from './ui/EmptyFormats';
+import { FormatIcon } from './ui/FormatIcon';
+import { FORMAT_LABELS } from './ui/formatData';
 import { QueuePanel } from './ui/QueuePanel';
 import { SupportedFormatsModal } from './ui/SupportedFormatsModal';
+
+const HERO_CONVERSION_EXAMPLES: readonly {
+  input: FormatId;
+  output: FormatId;
+  engine: 'browser' | 'local';
+  engineLabel: string;
+}[] = [
+  { input: 'docx', output: 'pdf', engine: 'local', engineLabel: 'Local Engine · Mac' },
+  { input: 'png', output: 'webp', engine: 'browser', engineLabel: 'Handled in Chrome' },
+  { input: 'mp4', output: 'mp3', engine: 'local', engineLabel: 'Local Engine · Mac' },
+  { input: 'csv', output: 'json', engine: 'browser', engineLabel: 'Handled in Chrome' },
+];
 
 export default function App() {
   const {
@@ -100,25 +112,37 @@ export default function App() {
                 <span><b>MP4</b> → MP3</span>
               </div>
             </div>
-            <aside className="privacy-story" aria-label="Format Forge file converter overview">
-              <div className="privacy-story__top">
-                <span className="privacy-lock"><LockKeyhole size={22} aria-hidden="true" /></span>
+            <aside className="privacy-story conversion-showcase" aria-labelledby="conversion-showcase-title">
+              <div className="conversion-showcase__heading">
                 <div>
-                  <p>Private file format converter</p>
-                  <strong>100+ conversion paths. Zero cloud uploads.</strong>
+                  <p>Popular conversions</p>
+                  <h2 id="conversion-showcase-title">See one format become another</h2>
                 </div>
+                <span className="conversion-showcase__privacy"><ShieldCheck size={14} aria-hidden="true" /> Files stay local</span>
               </div>
-              <div className="privacy-flow" aria-hidden="true">
-                <span><Files size={19} /></span>
-                <i><ArrowRight size={15} /></i>
-                <span className="privacy-flow__active"><Sparkles size={19} /></span>
-                <i><ArrowRight size={15} /></i>
-                <span><FileCheck2 size={19} /></span>
-              </div>
-              <div className="privacy-story__facts">
-                <span><ShieldCheck size={15} aria-hidden="true" /> Documents &amp; PDFs</span>
-                <span><ShieldCheck size={15} aria-hidden="true" /> Images &amp; data</span>
-                <span><ShieldCheck size={15} aria-hidden="true" /> Audio &amp; video</span>
+              <div className="conversion-showcase__list">
+                {HERO_CONVERSION_EXAMPLES.map(({ input, output, engine, engineLabel }) => (
+                  <div className="conversion-example" key={`${input}-${output}`}>
+                    <div className="conversion-format">
+                      <FormatIcon format={input} size={20} />
+                      <span>
+                        <small>From</small>
+                        <strong>{FORMAT_LABELS[input]}</strong>
+                      </span>
+                    </div>
+                    <div className={`conversion-route conversion-route--${engine}`} aria-label={`Uses ${engineLabel}`}>
+                      <ArrowRight size={18} aria-hidden="true" />
+                      <small>{engineLabel}</small>
+                    </div>
+                    <div className="conversion-format conversion-format--output">
+                      <FormatIcon format={output} size={20} />
+                      <span>
+                        <small>To</small>
+                        <strong>{FORMAT_LABELS[output]}</strong>
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </aside>
           </div>
@@ -151,6 +175,7 @@ export default function App() {
           />
           <QueuePanel
             jobs={jobs}
+            capabilities={companion.capabilities}
             isConverting={isConverting}
             overallProgress={overallProgress}
             onUpdateOutput={updateOutput}

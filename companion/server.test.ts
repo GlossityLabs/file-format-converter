@@ -46,6 +46,41 @@ async function fakeNativeTool(directory: string): Promise<string> {
 }
 
 describe('companion HTTP boundary', () => {
+  it('detects a conversion tool installed after the service starts', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'format-forge-tool-refresh-'));
+    temporaryDirectories.push(directory);
+    const delayedTool = join(directory, 'fake-native-tool');
+    for (const key of ENVIRONMENT_TOOL_KEYS) process.env[key] = delayedTool;
+
+    const token = randomBytes(32).toString('base64url');
+    activeService = await createCompanionService({
+      host: '127.0.0.1',
+      port: 0,
+      pairingToken: token,
+      tokenFile: join(directory, 'pairing-token'),
+      tempDirectory: join(directory, 'jobs'),
+      allowedExtensionIds: new Set(),
+      allowedDevOrigins: new Set(),
+    });
+    await activeService.start();
+
+    // Simulate an installer placing the executable in its supported location
+    // while Format Forge remains open.
+    await fakeNativeTool(directory);
+
+    const response = await fetch(`http://127.0.0.1:${activeService.port}/v1/capabilities`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({
+      tools: {
+        ffmpeg: { available: true, version: 'fake native tool 1.0' },
+        libreoffice: { available: true, version: 'fake native tool 1.0' },
+        poppler: { available: true, version: 'fake native tool 1.0' },
+      },
+    });
+  });
+
   it('enforces CORS/auth and cleans up a rejected streamed upload', async () => {
     const directory = await mkdtemp(join(tmpdir(), 'format-forge-server-'));
     temporaryDirectories.push(directory);
@@ -90,11 +125,15 @@ describe('companion HTTP boundary', () => {
     expect(forbiddenOrigin.headers.has('access-control-allow-origin')).toBe(false);
 
     const unpairedCapabilities = await fetch(`${baseUrl}/v1/capabilities`);
-    await expect(unpairedCapabilities.json()).resolves.toMatchObject({ paired: false });
+    await expect(unpairedCapabilities.json()).resolves.toMatchObject({
+      apiVersion: 1,
+      paired: false,
+    });
     const pairedCapabilities = await fetch(`${baseUrl}/v1/capabilities`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     await expect(pairedCapabilities.json()).resolves.toMatchObject({
+      apiVersion: 1,
       paired: true,
       tools: {
         ffmpeg: { available: true },

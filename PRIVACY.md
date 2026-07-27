@@ -1,6 +1,6 @@
 # Format Forge — Privacy Policy
 
-_Last updated: July 16, 2026_
+_Last updated: July 20, 2026_
 
 ## The short version
 
@@ -39,6 +39,11 @@ servers. We do not sell, rent, or share user data because we do not receive it.
   area. The developer has no access to these local values. Disconnecting removes
   the extension's saved pairing token; the companion's local token file remains
   until the user removes or rotates it.
+- **Automatic app connection** uses Chrome Native Messaging to ask the installed
+  Format Forge app to start its loopback service. The setup message contains no
+  file contents or filenames. The app returns its local service version,
+  loopback address, and private connection credential; conversion files continue
+  to travel only over the authenticated loopback connection described above.
 - **Companion diagnostics** do not log file contents, filenames, pairing tokens,
   or native-tool diagnostic output. The companion pairing token is stored locally
   in a user-private configuration file unless the user supplies it through an
@@ -57,8 +62,10 @@ which files you convert, which formats you use, or whether you use the extension
 
 The packaged extension loads its code, icons, and conversion libraries from the
 extension itself. Its only runtime network permission is the fixed loopback
-companion address. It does not inject scripts into websites or read browsing
-history or page content.
+companion address. Native Messaging is limited to the separately installed
+Format Forge app and is used to start and authorize that local service. The
+extension does not inject scripts into websites or read browsing history or page
+content.
 
 The browser, operating system, Chrome download system, and separately installed
 tools such as LibreOffice and FFmpeg have their own behavior and privacy terms.
@@ -70,6 +77,7 @@ external tools.
 | Permission | Why it is needed |
 | --- | --- |
 | `storage` | Stores the optional local companion address and pairing token, plus a session-only identifier for the extension's own tab. It is never used for file contents. |
+| `nativeMessaging` | Starts and securely connects to the separately installed Format Forge app without requiring Terminal commands or a copied code. Conversion files are not sent through Native Messaging. |
 | Access to `http://127.0.0.1:43123/*` | Checks, pairs with, and sends user-requested conversion jobs to the optional companion running on the same computer. |
 
 Format Forge requests no website access, browsing-history, cookies, downloads,

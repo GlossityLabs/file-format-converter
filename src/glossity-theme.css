@@ -495,6 +495,60 @@ h3,
   color: var(--gl-mint);
 }
 
+.conversion-showcase__heading p {
+  color: var(--gl-text-3);
+  font-family: var(--gl-mono);
+  font-weight: 500;
+}
+
+.conversion-showcase__heading h2 {
+  color: var(--gl-text);
+  font-family: var(--gl-display);
+  font-weight: 600;
+}
+
+.conversion-showcase__privacy {
+  border-color: rgb(109 240 194 / 20%);
+  color: var(--gl-mint);
+  background: rgb(109 240 194 / 7%);
+  font-family: var(--gl-mono);
+  font-weight: 500;
+}
+
+.conversion-example {
+  border-color: var(--gl-line-soft);
+  background: rgb(0 0 0 / 16%);
+}
+
+.conversion-format small {
+  color: var(--gl-text-3);
+  font-family: var(--gl-mono);
+  font-weight: 500;
+}
+
+.conversion-format strong {
+  color: var(--gl-text);
+  font-family: var(--gl-display);
+  font-weight: 600;
+}
+
+.conversion-route {
+  color: var(--gl-text-3);
+}
+
+.conversion-route--browser {
+  color: var(--gl-cyan);
+}
+
+.conversion-route--local {
+  color: var(--gl-mint);
+}
+
+.conversion-route small {
+  font-family: var(--gl-mono);
+  font-weight: 500;
+}
+
 .button {
   min-height: 42px;
   padding-inline: 20px;
@@ -799,6 +853,12 @@ h3,
   text-transform: uppercase;
 }
 
+.status-pill--warning {
+  border-color: rgb(242 198 109 / 24%);
+  color: #e6cca0;
+  background: var(--amber-soft);
+}
+
 .format-preview {
   margin-top: 68px;
 }
@@ -1076,6 +1136,12 @@ h3,
   background: var(--red-soft);
 }
 
+.job-error--availability {
+  border-color: rgb(242 198 109 / 18%);
+  color: #e6cca0;
+  background: var(--amber-soft);
+}
+
 .site-footer {
   border-top-color: var(--gl-line-soft);
   color: var(--gl-text-2);
@@ -1152,6 +1218,16 @@ h3,
   color: var(--gl-text-2);
 }
 
+.platform-note {
+  border-color: rgb(242 198 109 / 18%);
+  color: #e6cca0;
+  background: var(--amber-soft);
+}
+
+.platform-note strong {
+  color: var(--gl-text);
+}
+
 .recipe-dot {
   background: var(--gl-cyan);
   box-shadow: 0 0 9px rgb(111 215 247 / 55%);
@@ -1204,6 +1280,15 @@ h3,
   border-color: rgb(109 240 194 / 20%);
   color: var(--gl-mint);
   background: rgb(109 240 194 / 7%);
+}
+
+.recipe-engine-label {
+  color: var(--gl-cyan);
+  font-family: var(--gl-mono);
+}
+
+.recipe-output-group--companion .recipe-engine-label {
+  color: var(--gl-mint);
 }
 
 .fidelity-note {
@@ -1270,6 +1355,19 @@ h3,
   border: 1px solid rgb(109 240 194 / 24%);
   color: var(--gl-mint);
   background: rgb(109 240 194 / 9%);
+}
+
+.developer-pairing {
+  border-top-color: var(--gl-line-soft);
+}
+
+.developer-pairing summary,
+.developer-pairing__intro {
+  color: var(--gl-text-3);
+}
+
+.developer-pairing[open] summary {
+  color: var(--gl-text-2);
 }
 
 .tool-chip {

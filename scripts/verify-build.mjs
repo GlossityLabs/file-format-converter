@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -21,10 +22,57 @@ function walk(directory, output = []) {
 const manifestPath = join(extensionDir, 'manifest.json');
 invariant(existsSync(manifestPath), 'manifest.json is missing');
 const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+const packageManifest = JSON.parse(readFileSync(join(projectRoot, 'package.json'), 'utf8'));
+const desktopPackageManifest = JSON.parse(
+  readFileSync(join(projectRoot, 'desktop', 'package.json'), 'utf8'),
+);
 invariant(manifest.manifest_version === 3, 'manifest_version must be 3');
+invariant(manifest.version === packageManifest.version, 'extension and root package versions must match');
+invariant(
+  desktopPackageManifest.version === packageManifest.version,
+  'desktop and root package versions must match',
+);
+const companionContracts = readFileSync(
+  join(projectRoot, 'companion', 'contracts.ts'),
+  'utf8',
+);
+invariant(
+  companionContracts.includes(`SERVICE_VERSION = '${packageManifest.version}'`),
+  'companion service and package versions must match',
+);
+invariant(
+  desktopPackageManifest.dependencies?.['electron-updater'],
+  'desktop automatic updater must be a production dependency',
+);
+invariant(
+  desktopPackageManifest.build?.publish?.provider === 'github',
+  'desktop updater must publish through the GitHub release provider',
+);
+invariant(
+  JSON.stringify(desktopPackageManifest.build?.mac?.target?.map((target) => target.target))
+    === JSON.stringify(['dmg', 'zip']),
+  'desktop release must include both DMG and ZIP update targets',
+);
+invariant(typeof manifest.key === 'string' && manifest.key.length > 0, 'stable extension public key is missing');
+const extensionId = createHash('sha256')
+  .update(Buffer.from(manifest.key, 'base64'))
+  .digest('hex')
+  .slice(0, 32)
+  .replace(/[0-9a-f]/g, (digit) => String.fromCharCode(97 + Number.parseInt(digit, 16)));
+const nativeHostExtensionId = readFileSync(
+  join(projectRoot, 'desktop', 'assets', 'extension-id.txt'),
+  'utf8',
+).trim();
+invariant(
+  extensionId === nativeHostExtensionId,
+  'manifest public key and native-host allowed extension ID do not match',
+);
 invariant(manifest.background?.service_worker === 'background.js', 'background service worker path is incorrect');
 invariant(existsSync(join(extensionDir, 'background.js')), 'background.js is missing');
-invariant(JSON.stringify(manifest.permissions) === JSON.stringify(['storage']), 'unexpected extension permissions');
+invariant(
+  JSON.stringify(manifest.permissions) === JSON.stringify(['storage', 'nativeMessaging']),
+  'extension permissions must be limited to local storage and the installed Mac app connection',
+);
 invariant(
   JSON.stringify(manifest.host_permissions) === JSON.stringify(['http://127.0.0.1:43123/*']),
   'host permissions must be restricted to the fixed loopback companion',

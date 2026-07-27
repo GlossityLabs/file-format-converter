@@ -1,10 +1,12 @@
 import { CheckCheck, Download, Eye, Play, Trash2 } from 'lucide-react';
-import type { ConversionJob, FormatId, QualityPreset } from '../core/types';
+import { findRecipe, isRecipeAvailable } from '../core/recipes';
+import type { CompanionCapabilities, ConversionJob, FormatId, QualityPreset } from '../core/types';
 import { JobCard } from './JobCard';
 import { pluralize } from './formatData';
 
 interface QueuePanelProps {
   jobs: ConversionJob[];
+  capabilities: CompanionCapabilities | null;
   isConverting: boolean;
   overallProgress: number;
   onUpdateOutput: (id: string, format: FormatId) => void;
@@ -21,6 +23,7 @@ interface QueuePanelProps {
 
 export function QueuePanel({
   jobs,
+  capabilities,
   isConverting,
   overallProgress,
   onUpdateOutput,
@@ -36,7 +39,11 @@ export function QueuePanel({
 }: QueuePanelProps) {
   if (jobs.length === 0) return null;
 
-  const readyCount = jobs.filter((job) => job.status === 'ready').length;
+  const readyCount = jobs.filter((job) => {
+    if (job.status !== 'ready') return false;
+    const recipe = findRecipe(job.inputFormat, job.outputFormat);
+    return Boolean(recipe && isRecipeAvailable(recipe, capabilities));
+  }).length;
   const completeCount = jobs.filter((job) => job.status === 'complete').length;
   const clampedProgress = Math.max(0, Math.min(100, Math.round(overallProgress)));
 
@@ -89,6 +96,7 @@ export function QueuePanel({
           <JobCard
             key={job.id}
             job={job}
+            capabilities={capabilities}
             onUpdateOutput={onUpdateOutput}
             onUpdatePreset={onUpdatePreset}
             onStart={onStart}

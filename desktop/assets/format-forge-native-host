@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+host_directory=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+resources_directory=$(CDPATH= cd -- "$host_directory/.." && pwd)
+contents_directory=$(CDPATH= cd -- "$resources_directory/.." && pwd)
+bundle_executable=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$contents_directory/Info.plist")
+app_executable="$contents_directory/MacOS/$bundle_executable"
+
+export ELECTRON_RUN_AS_NODE=1
+exec "$app_executable" "$host_directory/native-host.mjs" "$@"

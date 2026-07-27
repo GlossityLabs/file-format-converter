@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Format Forge</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="renderer.js" defer></script>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="header">
+        <div class="brand-mark" aria-hidden="true">FF</div>
+        <div>
+          <p class="eyebrow">PRIVATE FILE PROCESSING</p>
+          <h1>Format Forge for Mac</h1>
+          <p class="subtitle">Runs advanced conversions on this Mac so files never need to be uploaded.</p>
+        </div>
+        <div id="statusPill" class="status-pill stopped">
+          <span class="status-dot"></span>
+          <span id="statusText">Engine stopped</span>
+        </div>
+      </header>
+
+      <section class="hero-card">
+        <div>
+          <p class="section-label">LOCAL ENGINE</p>
+          <h2 id="engineTitle">Starting the conversion engine…</h2>
+          <p id="engineDescription" class="muted">
+            The app is preparing document, audio and video conversions for Chrome.
+          </p>
+          <p id="engineError" class="error" hidden></p>
+        </div>
+        <button id="engineButton" class="primary-button" type="button" disabled>Starting…</button>
+      </section>
+
+      <div class="grid">
+        <section class="card browser-card">
+          <div class="card-heading">
+            <div>
+              <p class="section-label">CHROME CONNECTION</p>
+              <h2>Automatic browser pairing</h2>
+            </div>
+            <span id="browserBadge" class="badge">Checking…</span>
+          </div>
+          <p class="muted">
+            Once registered, Chrome can start this app and connect securely. No Terminal command or pasted code is needed.
+          </p>
+          <p id="browserMessage" class="inline-message">Checking the Chrome connection…</p>
+          <button id="registerButton" class="secondary-button" type="button" hidden>
+            Register with Chrome
+          </button>
+
+          <details class="fallback">
+            <summary>Manual pairing fallback</summary>
+            <p>Use this only when testing an older extension build.</p>
+            <div class="token-row">
+              <code id="pairingToken">••••••••••••••••••••••••</code>
+              <button id="revealButton" class="text-button" type="button">Reveal</button>
+              <button id="copyButton" class="text-button" type="button">Copy</button>
+            </div>
+          </details>
+        </section>
+
+        <section class="card">
+          <div class="card-heading">
+            <div>
+              <p class="section-label">AVAILABLE CONVERTERS</p>
+              <h2>Installed tools</h2>
+            </div>
+            <div class="tool-heading-actions">
+              <span id="recipeCount" class="badge">Checking…</span>
+              <button id="toolRefreshButton" class="text-button" type="button">Check again</button>
+            </div>
+          </div>
+          <div id="toolsList" class="tools-list" aria-live="polite">
+            <p class="muted">Detecting conversion tools…</p>
+          </div>
+          <p class="tool-help">
+            Documents need LibreOffice; audio and video need FFmpeg. After installation, return to Format Forge—the status updates automatically.
+          </p>
+        </section>
+      </div>
+
+      <section class="card settings-card">
+        <div>
+          <p class="section-label">PREFERENCES</p>
+          <h2>Keep conversions ready</h2>
+          <p class="muted">Start quietly when you sign in so Chrome conversions work immediately.</p>
+        </div>
+        <label class="switch-row">
+          <span>Start Format Forge at login</span>
+          <input id="loginToggle" type="checkbox" />
+          <span class="switch" aria-hidden="true"></span>
+        </label>
+      </section>
+
+      <section class="card update-card">
+        <div>
+          <p class="section-label">SOFTWARE UPDATES</p>
+          <h2 id="updateTitle">Checking update settings…</h2>
+          <p id="updateMessage" class="muted">Format Forge will verify its update channel.</p>
+          <div id="updateProgress" class="update-progress" hidden>
+            <span id="updateProgressBar"></span>
+          </div>
+        </div>
+        <div class="update-actions">
+          <span id="updateVersion" class="badge">Version…</span>
+          <button id="updateButton" class="secondary-button" type="button" disabled>
+            Checking…
+          </button>
+        </div>
+      </section>
+
+      <footer>
+        <span class="lock" aria-hidden="true">⌾</span>
+        Files are processed locally. The browser connection is limited to 127.0.0.1.
+      </footer>
+      <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    </main>
+  </body>
+</html>

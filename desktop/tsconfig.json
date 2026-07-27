@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "sourceMap": false,
+    "types": ["node", "electron"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.cts", "src/**/*.mts"]
+}

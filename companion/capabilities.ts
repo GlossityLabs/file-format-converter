@@ -71,6 +71,11 @@ export async function detectTools(): Promise<DetectedTools> {
         process.env.FORMAT_FORGE_FFMPEG_PATH ?? process.env.FFMPEG_PATH,
         'ffmpeg',
         ['-version'],
+        [
+          '/opt/homebrew/bin/ffmpeg',
+          '/usr/local/bin/ffmpeg',
+          '/opt/local/bin/ffmpeg',
+        ],
       ),
     ),
     detect(
@@ -78,6 +83,11 @@ export async function detectTools(): Promise<DetectedTools> {
         process.env.FORMAT_FORGE_FFPROBE_PATH ?? process.env.FFPROBE_PATH,
         'ffprobe',
         ['-version'],
+        [
+          '/opt/homebrew/bin/ffprobe',
+          '/usr/local/bin/ffprobe',
+          '/opt/local/bin/ffprobe',
+        ],
       ),
     ),
     detect(
@@ -93,6 +103,11 @@ export async function detectTools(): Promise<DetectedTools> {
         process.env.FORMAT_FORGE_PDFTOPPM_PATH ?? process.env.PDFTOPPM_PATH,
         'pdftoppm',
         ['-v'],
+        [
+          '/opt/homebrew/bin/pdftoppm',
+          '/usr/local/bin/pdftoppm',
+          '/opt/local/bin/pdftoppm',
+        ],
       ),
     ),
   ]);

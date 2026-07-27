@@ -7,6 +7,7 @@ import { pathToFileURL } from 'node:url';
 import { detectTools, publicToolCapability } from './capabilities.js';
 import { loadRuntimeOptions } from './config.js';
 import {
+  API_VERSION,
   SERVICE_NAME,
   SERVICE_VERSION,
   isFormatId,
@@ -221,6 +222,7 @@ function capabilityResponse(
   return {
     service: SERVICE_NAME,
     version: SERVICE_VERSION,
+    apiVersion: API_VERSION,
     paired,
     tools: {
       ffmpeg: publicToolCapability(tools.ffmpeg),
@@ -252,6 +254,7 @@ async function handleCreateJob(
   response: ServerResponse,
   manager: JobManager,
   tools: DetectedTools,
+  refreshTools: () => Promise<DetectedTools>,
   options: RuntimeOptions,
 ): Promise<void> {
   if (!manager.canAccept()) {
@@ -283,9 +286,22 @@ async function handleCreateJob(
   if (!recipe) {
     throw new HttpError(422, 'recipe_not_allowed', 'This conversion recipe is not supported.');
   }
-  const requiredTool = recipe.requires === 'libreoffice' ? tools.libreoffice : tools.ffmpeg;
+  let requiredTool = tools[recipe.requires];
   if (!requiredTool.available) {
-    throw new HttpError(409, 'tool_unavailable', 'The required local conversion tool is unavailable.');
+    // A user may have installed LibreOffice, FFmpeg, or Poppler while the
+    // engine was already running. Re-probe before rejecting the conversion
+    // so returning from the installer and pressing Convert/Retry just works.
+    await refreshTools();
+    requiredTool = tools[recipe.requires];
+  }
+  if (!requiredTool.available) {
+    const message =
+      recipe.requires === 'ffmpeg'
+          ? 'Audio and video conversion is not ready. Open Format Forge for Mac and check the Audio and video tool, then retry.'
+        : recipe.requires === 'libreoffice'
+          ? 'Office conversion is not ready. Open Format Forge for Mac and check the Office documents tool, then retry.'
+          : 'This Local Engine PDF conversion is not available. Supported PDF-to-image conversions run inside Chrome.';
+    throw new HttpError(409, 'tool_unavailable', message);
   }
 
   const job = await manager.create({
@@ -347,6 +363,7 @@ async function routeRequest(
   response: ServerResponse,
   manager: JobManager,
   tools: DetectedTools,
+  refreshTools: () => Promise<DetectedTools>,
   options: RuntimeOptions,
   pairingToken: string,
 ): Promise<void> {
@@ -355,19 +372,24 @@ async function routeRequest(
     sendJson(response, 200, {
       service: SERVICE_NAME,
       version: SERVICE_VERSION,
+      apiVersion: API_VERSION,
       status: 'ok',
     });
     return;
   }
   if (request.method === 'GET' && url.pathname === '/v1/capabilities') {
     const suppliedToken = bearerTokenFromHeader(singleHeader(request, 'authorization'));
+    // Capability checks are infrequent and are also the user's explicit
+    // "check again" path. Refreshing here prevents a restart requirement
+    // after a supported tool is installed or removed.
+    await refreshTools();
     sendJson(response, 200, capabilityResponse(tools, options, tokensMatch(suppliedToken, pairingToken)));
     return;
   }
 
   if (url.pathname.startsWith('/v1/jobs')) requireAuthentication(request, pairingToken);
   if (request.method === 'POST' && url.pathname === '/v1/jobs') {
-    await handleCreateJob(request, response, manager, tools, options);
+    await handleCreateJob(request, response, manager, tools, refreshTools, options);
     return;
   }
 
@@ -412,11 +434,27 @@ export async function createCompanionService(
   const pairingToken = configuredToken ?? (await loadOrCreatePairingToken(options.tokenFile));
   const tools = await detectTools();
   const manager = new JobManager(tools, options);
+  let toolRefresh: Promise<DetectedTools> | undefined;
+  const refreshTools = (): Promise<DetectedTools> => {
+    if (toolRefresh) return toolRefresh;
+    toolRefresh = detectTools()
+      .then((detected) => {
+        // JobManager keeps this object by reference. Updating it in place
+        // makes newly installed tools available to both future jobs and the
+        // public capability response without restarting the service.
+        Object.assign(tools, detected);
+        return tools;
+      })
+      .finally(() => {
+        toolRefresh = undefined;
+      });
+    return toolRefresh;
+  };
 
   const server = createServer((request, response) => {
     setSecurityHeaders(response);
     if (!validateCors(request, response, options)) return;
-    void routeRequest(request, response, manager, tools, options, pairingToken).catch((error) => {
+    void routeRequest(request, response, manager, tools, refreshTools, options, pairingToken).catch((error) => {
       if (response.headersSent) {
         response.destroy();
         return;

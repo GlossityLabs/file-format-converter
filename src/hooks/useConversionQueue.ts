@@ -16,7 +16,13 @@ import {
   MAX_QUEUE_BYTES,
   MAX_QUEUE_FILES,
 } from '../core/limits';
-import { findRecipe, getAvailableRecipes, getKnownRecipesForInput } from '../core/recipes';
+import {
+  findRecipe,
+  getAvailableRecipes,
+  getKnownRecipesForInput,
+  isRecipeAvailable,
+  recipeUnavailableReason,
+} from '../core/recipes';
 import { convertInBrowser } from '../converters/browser';
 import { CompanionClient, companionClient } from '../converters/companion';
 
@@ -46,6 +52,7 @@ export interface UseConversionQueueOptions {
 export interface CompanionQueueController {
   status: CompanionConnectionStatus;
   capabilities: CompanionCapabilities | null;
+  error: string | null;
   refresh: () => Promise<CompanionCapabilities | null>;
   pair: (token: string) => Promise<CompanionCapabilities>;
   disconnect: () => Promise<void>;
@@ -140,6 +147,7 @@ export function useConversionQueue(options: UseConversionQueueOptions = {}): Con
   const [queueError, setQueueError] = useState<string | null>(null);
   const [companionStatus, setCompanionStatus] = useState<CompanionConnectionStatus>('checking');
   const [capabilities, setCapabilities] = useState<CompanionCapabilities | null>(null);
+  const [companionError, setCompanionError] = useState<string | null>(null);
   const abortControllers = useRef(new Map<string, AbortController>());
   const pendingIds = useRef<string[]>([]);
   const drainPromise = useRef<Promise<void> | null>(null);
@@ -159,19 +167,26 @@ export function useConversionQueue(options: UseConversionQueueOptions = {}): Con
   );
 
   const refreshCompanion = useCallback(async (): Promise<CompanionCapabilities | null> => {
-    if (mounted.current) setCompanionStatus('checking');
+    if (mounted.current) {
+      setCompanionStatus((current) => (current === 'paired' ? current : 'checking'));
+    }
+    if (mounted.current) setCompanionError(null);
     try {
-      await client.health();
-      const nextCapabilities = await client.getCapabilities();
+      // `connect` first checks the existing loopback service, then asks the
+      // installed desktop app to launch and authorize it through Native
+      // Messaging. That keeps app startup and pairing out of Terminal.
+      const nextCapabilities = await client.connect();
       if (mounted.current) {
         setCapabilities(nextCapabilities);
         setCompanionStatus(nextCapabilities.paired ? 'paired' : 'unpaired');
+        setCompanionError(null);
       }
       return nextCapabilities;
-    } catch {
+    } catch (error) {
       if (mounted.current) {
         setCapabilities(null);
         setCompanionStatus('unavailable');
+        setCompanionError(errorMessage(error));
       }
       return null;
     }
@@ -179,6 +194,7 @@ export function useConversionQueue(options: UseConversionQueueOptions = {}): Con
 
   const pairCompanion = useCallback(
     async (token: string): Promise<CompanionCapabilities> => {
+      if (mounted.current) setCompanionError(null);
       const nextCapabilities = await client.pair(token);
       if (mounted.current) {
         setCapabilities(nextCapabilities);
@@ -194,6 +210,7 @@ export function useConversionQueue(options: UseConversionQueueOptions = {}): Con
     if (mounted.current) {
       setCapabilities((current) => (current ? { ...current, paired: false } : current));
       setCompanionStatus('unpaired');
+      setCompanionError(null);
     }
   }, [client]);
 
@@ -315,6 +332,18 @@ export function useConversionQueue(options: UseConversionQueueOptions = {}): Con
         return;
       }
 
+      if (recipe.engine === 'companion' && !isRecipeAvailable(recipe, capabilities)) {
+        const refreshedCapabilities = await refreshCompanion();
+        if (!isRecipeAvailable(recipe, refreshedCapabilities)) {
+          patchJob(id, {
+            status: 'failed',
+            progress: 0,
+            error: recipeUnavailableReason(recipe, refreshedCapabilities),
+          });
+          return;
+        }
+      }
+
       const controller = new AbortController();
       abortControllers.current.set(id, controller);
       patchJob(id, { status: recipe.engine === 'companion' ? 'uploading' : 'converting', progress: 1, error: undefined });
@@ -368,7 +397,7 @@ export function useConversionQueue(options: UseConversionQueueOptions = {}): Con
         abortControllers.current.delete(id);
       }
     },
-    [client, patchJob],
+    [capabilities, client, patchJob, refreshCompanion],
   );
 
   const drain = useCallback((): Promise<void> => {
@@ -410,9 +439,15 @@ export function useConversionQueue(options: UseConversionQueueOptions = {}): Con
   );
 
   const convertAll = useCallback(async (): Promise<void> => {
-    const ids = jobsRef.current.filter((job) => job.status === 'ready').map((job) => job.id);
+    const ids = jobsRef.current
+      .filter((job) => {
+        if (job.status !== 'ready') return false;
+        const recipe = findRecipe(job.inputFormat, job.outputFormat);
+        return Boolean(recipe && isRecipeAvailable(recipe, capabilities));
+      })
+      .map((job) => job.id);
     await enqueue(ids);
-  }, [enqueue]);
+  }, [capabilities, enqueue]);
 
   const cancelJob = useCallback(
     (id: string): void => {
@@ -514,6 +549,36 @@ export function useConversionQueue(options: UseConversionQueueOptions = {}): Con
     if (options.autoRefreshCompanion !== false) void refreshCompanion();
   }, [options.autoRefreshCompanion, refreshCompanion]);
 
+  useEffect(() => {
+    if (options.autoRefreshCompanion === false) return undefined;
+    const refreshWhenVisible = (): void => {
+      if (document.visibilityState === 'visible') void refreshCompanion();
+    };
+    window.addEventListener('focus', refreshWhenVisible);
+    document.addEventListener('visibilitychange', refreshWhenVisible);
+    return () => {
+      window.removeEventListener('focus', refreshWhenVisible);
+      document.removeEventListener('visibilitychange', refreshWhenVisible);
+    };
+  }, [options.autoRefreshCompanion, refreshCompanion]);
+
+  useEffect(() => {
+    if (
+      options.autoRefreshCompanion === false
+      || companionStatus !== 'paired'
+      || (
+        capabilities?.tools.libreoffice.available === true
+        && capabilities.tools.ffmpeg.available === true
+      )
+    ) {
+      return undefined;
+    }
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') void refreshCompanion();
+    }, 15_000);
+    return () => window.clearInterval(timer);
+  }, [capabilities, companionStatus, options.autoRefreshCompanion, refreshCompanion]);
+
   const isConverting = jobs.some((job) => ['uploading', 'converting', 'finalizing'].includes(job.status));
   const overallProgress = jobs.length === 0
     ? 0
@@ -523,11 +588,12 @@ export function useConversionQueue(options: UseConversionQueueOptions = {}): Con
     () => ({
       status: companionStatus,
       capabilities,
+      error: companionError,
       refresh: refreshCompanion,
       pair: pairCompanion,
       disconnect: disconnectCompanion,
     }),
-    [capabilities, companionStatus, disconnectCompanion, pairCompanion, refreshCompanion],
+    [capabilities, companionError, companionStatus, disconnectCompanion, pairCompanion, refreshCompanion],
   );
 
   return {

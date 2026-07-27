@@ -23,7 +23,10 @@ Popular conversions include:
 - MP3, WAV, FLAC, M4A, AAC, OGG and Opus audio conversions
 - MP4, MOV, MKV, WebM, AVI and M4V video conversions, including MP4 to MP3 or GIF
 
-Image, PDF, CSV and JSON conversions run directly in Chrome. High-fidelity Office, audio and video conversions use the optional Format Forge Companion on the same computer, backed by LibreOffice and FFmpeg.
+Image, PDF, CSV and JSON conversions run directly in Chrome. Office, audio and
+video conversions use the optional Format Forge app on the same Mac, backed by
+LibreOffice and FFmpeg. Install and open the Mac app once; Chrome connects to it
+automatically without Terminal commands or a copied setup code.
 
 Privacy is part of the architecture: Format Forge has no accounts, analytics, advertising, cloud upload service or developer-operated conversion API. Source files and converted results stay on the user's device.
 
